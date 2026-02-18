@@ -1,0 +1,402 @@
+/* ============================================
+   Home Feed Screen
+   ============================================ */
+
+.home {
+  position: relative;
+  justify-content: flex-start;
+  background: var(--color-gray-50);
+}
+
+/* ── Sticky header ── */
+.home__header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-gray-200);
+  padding: 12px var(--screen-padding) 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Right side of header row (location + cart) ── */
+.home__header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Location picker ── */
+.home__loc-wrap {
+  position: relative;
+}
+
+.home__loc-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-primary);
+  background: var(--color-gray-100);
+  border: 1.5px solid var(--color-gray-200);
+  border-radius: var(--radius-full);
+  padding: 6px 10px 6px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.home__loc-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg);
+}
+
+/* Invisible backdrop to close dropdown */
+.home__loc-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.home__loc-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: 4px 4px 0 var(--color-accent);
+  z-index: 50;
+  list-style: none;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.home__loc-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-primary);
+  text-align: left;
+  transition: background 0.1s;
+}
+
+.home__loc-option:hover {
+  background: var(--color-gray-100);
+}
+
+.home__loc-option--active {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* ── Search bar ── */
+.home__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-gray-200);
+  background: var(--color-gray-100);
+  cursor: text;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.home__search:hover {
+  border-color: var(--color-primary);
+}
+
+.home__search svg {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.home__search-placeholder {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-gray-400);
+}
+
+/* ── Scrollable content ── */
+.home__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 80px; /* clear BottomNav */
+  overflow-y: auto;
+}
+
+/* ── Greeting ── */
+.home__greeting {
+  padding: 20px var(--screen-padding) 4px;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+.home__greeting-text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+.home__greeting-name {
+  position: relative;
+  display: inline-block;
+}
+
+.home__greeting-name::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 1px;
+  width: 100%;
+  height: 5px;
+  background: var(--color-accent);
+  z-index: -1;
+  border-radius: 2px;
+}
+
+.home__greeting-sub {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-gray-600);
+  margin-top: 4px;
+  padding-bottom: 16px;
+}
+
+/* ── Section ── */
+.home__section {
+  padding: 22px 0 8px;
+  background: var(--color-bg);
+  margin-bottom: 10px;
+}
+
+.home__section-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+  margin-bottom: 14px;
+  padding: 0 var(--screen-padding);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Yellow dot accent before section titles */
+.home__section-title::before {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ── Carousel ── */
+.home__carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px var(--screen-padding) 12px;
+}
+
+.home__carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Event card ── */
+.home__event-card {
+  flex-shrink: 0;
+  width: 172px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-gray-200);
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: start;
+  background: var(--color-bg);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home__event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 var(--color-accent);
+  border-color: var(--color-primary);
+}
+
+.home__event-img {
+  width: 100%;
+  height: 118px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-gray-200);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px;
+}
+
+.home__event-date-badge {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--color-primary);
+}
+
+.home__event-info {
+  padding: 10px 11px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.home__event-artist {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+.home__event-venue {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--color-gray-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Follow / Drop cards ── */
+.home__follow-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px var(--screen-padding) 8px;
+}
+
+.home__drop-card {
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg);
+  box-shadow: 4px 4px 0 var(--color-accent);
+}
+
+.home__drop-card-inner {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  align-items: flex-start;
+}
+
+.home__drop-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.home__drop-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.home__drop-artist {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
+.home__drop-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+.home__drop-price {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.home__drop-cta {
+  align-self: flex-start;
+  padding: 9px 18px;
+  font-size: 14px;
+  margin-top: 4px;
+  border: 2px solid var(--color-primary);
+}
+
+.home__drop-cta:hover {
+  background: var(--color-primary);
+  color: var(--color-accent);
+  border-color: var(--color-primary);
+}
+
+.home__drop-thumb {
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  border-radius: var(--radius-md);
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-gray-200);
+  border: 2px solid var(--color-gray-200);
+}
+
+.home__drop-footer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px 10px;
+  border-top: 1.5px solid var(--color-gray-200);
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--color-gray-600);
+}

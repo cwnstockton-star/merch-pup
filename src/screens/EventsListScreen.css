@@ -1,0 +1,263 @@
+/* ============================================
+   Events List Screen
+   ============================================ */
+
+.events-list {
+  background: var(--color-gray-50);
+  justify-content: flex-start;
+}
+
+/* ── Sticky header ── */
+.events-list__header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-gray-200);
+  padding: 14px var(--screen-padding) 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.events-list__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.events-list__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+}
+
+/* ── Search bar ── */
+.events-list__search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-100);
+  padding: 0 12px;
+  transition: border-color 0.15s ease;
+}
+
+.events-list__search-wrap:focus-within {
+  border-color: var(--color-primary);
+  background: var(--color-bg);
+}
+
+.events-list__search-icon {
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.events-list__search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 11px 0;
+  font-size: 15px;
+  color: var(--color-primary);
+  outline: none;
+  /* override .input-field border */
+  border-radius: 0;
+}
+
+.events-list__search-input::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* Clear button */
+.events-list__search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-gray-400);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.events-list__search-clear:hover {
+  color: var(--color-primary);
+  background: var(--color-gray-200);
+}
+
+/* Results count */
+.events-list__count {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-gray-600);
+  padding-bottom: 2px;
+}
+
+/* ── Content ── */
+.events-list__content {
+  flex: 1;
+  padding: 14px var(--screen-padding) 88px;
+}
+
+.events-list__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Event card ── */
+.event-card {
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bg);
+  transition: box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.event-card:hover {
+  box-shadow: 4px 4px 0 var(--color-accent);
+  transform: translateY(-2px);
+}
+
+/* Hero image */
+.event-card__img {
+  width: 100%;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-gray-200);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 12px;
+}
+
+/* Following badge overlaid on image */
+.event-card__following-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+}
+
+/* Card body */
+.event-card__body {
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Date + city row */
+.event-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.event-card__date,
+.event-card__city {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+.event-card__sep {
+  color: var(--color-gray-400);
+  font-size: 12px;
+}
+
+/* Artist name */
+.event-card__artist {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+/* Venue */
+.event-card__venue {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-gray-600);
+  margin-bottom: 4px;
+}
+
+/* Footer with Explore button */
+.event-card__footer {
+  margin-top: 10px;
+}
+
+.event-card__cta {
+  padding: 11px 22px;
+  font-size: 14px;
+  box-shadow: 3px 3px 0 var(--color-accent);
+  transition: background 0.15s ease, color 0.15s ease,
+              box-shadow 0.12s ease, transform 0.1s ease;
+}
+
+.event-card__cta:hover {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  box-shadow: 3px 3px 0 var(--color-primary);
+}
+
+.event-card__cta:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--color-accent);
+}
+
+/* ── Empty state ── */
+.events-list__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 64px var(--screen-padding);
+  text-align: center;
+}
+
+.events-list__empty-icon {
+  color: var(--color-gray-200);
+  margin-bottom: 8px;
+}
+
+.events-list__empty-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.events-list__empty-sub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-600);
+  margin-bottom: 4px;
+}

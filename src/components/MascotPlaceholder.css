@@ -1,0 +1,80 @@
+.mascot-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2.5px dashed #ABABAB;
+  border-radius: 20px;
+  background: #FAFAFA;
+  padding: 24px;
+}
+
+/* ── Paw print ── */
+.mascot-placeholder__paw {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.paw-main {
+  width: 36px;
+  height: 30px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: #ABABAB;
+}
+
+.paw-toes {
+  display: flex;
+  gap: 5px;
+}
+
+.paw-toe {
+  width: 11px;
+  height: 13px;
+  border-radius: 50%;
+  background: #ABABAB;
+}
+
+.mascot-placeholder__label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: #ABABAB;
+  text-transform: uppercase;
+}
+
+.mascot-placeholder__sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #CBCBCB;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Sizes ── */
+.mascot-placeholder--sm {
+  width: 120px;
+  height: 120px;
+  padding: 16px;
+}
+.mascot-placeholder--sm .paw-main { width: 26px; height: 22px; }
+.mascot-placeholder--sm .paw-toe { width: 8px; height: 9px; }
+.mascot-placeholder--sm .paw-toes { gap: 3px; }
+.mascot-placeholder--sm .paw-main + .paw-toes { gap: 3px; }
+
+.mascot-placeholder--md {
+  width: 200px;
+  height: 200px;
+}
+
+.mascot-placeholder--lg {
+  width: 100%;
+  height: 240px;
+}
+.mascot-placeholder--lg .paw-main { width: 50px; height: 42px; }
+.mascot-placeholder--lg .paw-toe { width: 15px; height: 18px; }
+.mascot-placeholder--lg .paw-toes { gap: 7px; }
+.mascot-placeholder--lg .mascot-placeholder__label { font-size: 18px; }

@@ -1,0 +1,149 @@
+/* ============================================
+   Splash Screen — concert poster redesign
+   ============================================ */
+
+.splash {
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+/* ── 1. Grain / noise texture overlay ──────────────────────────────
+   SVG feTurbulence tiled as a background image.
+   mix-blend-mode: multiply means it only darkens — white stays white,
+   so high-contrast text is never affected. opacity kept low.
+   ────────────────────────────────────────────────────────────────── */
+.splash__grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23grain)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  opacity: 0.038;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── 2. Accent bars ── */
+.splash__top-bar {
+  height: 10px;
+  background: var(--color-accent);
+  width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.splash__bottom-bar {
+  height: 8px;
+  background: var(--color-primary);
+  width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+}
+
+/* ── 3. Logo zone — centered, pushed toward top ── */
+.splash__logo-zone {
+  display: flex;
+  justify-content: center;
+  padding: 40px var(--screen-padding) 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 4. Body — left-aligned, poster grid ── */
+.splash__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 0 var(--screen-padding) 40px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── 5. Tagline with rotated yellow slab ── */
+.splash__tagline-wrap {
+  position: relative;
+  /* generous padding so the slab bleeds visibly past the text */
+  padding: 8px 14px 8px 0;
+}
+
+.splash__tagline-highlight {
+  position: absolute;
+  inset: 0;
+  /* extends slightly left of the text */
+  left: -6px;
+  right: -10px;
+  background: var(--color-accent);
+  /* the signature slight rotation — hand-placed feel */
+  transform: rotate(-1.8deg) skewX(-0.3deg);
+  z-index: 0;
+  /* clip into a very slight parallelogram for extra roughness */
+  clip-path: polygon(0% 1%, 100% 0%, 99.5% 99%, 0.5% 100%);
+}
+
+.splash__tagline {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-primary);
+  /* black on yellow is WCAG AA+ — ~10:1 contrast ratio */
+}
+
+/* ── 6. Sub-copy ── */
+.splash__sub {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-gray-600);
+  text-align: left;
+  max-width: 300px;
+}
+
+/* ── 7. Thick rule ── */
+.splash__rule {
+  width: 100%;
+  height: 4px;
+  background: var(--color-primary);
+  border: none;
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+/* ── 8. CTA block ── */
+.splash__actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Yellow hard drop-shadow — risograph / screen-print energy */
+.splash__cta {
+  box-shadow: 4px 4px 0px var(--color-accent);
+  transition: background 0.15s ease, color 0.15s ease,
+              box-shadow 0.12s ease, transform 0.1s ease;
+}
+
+.splash__cta:hover {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  /* shadow flips to black on hover — inverts the accent */
+  box-shadow: 4px 4px 0px var(--color-primary);
+}
+
+.splash__cta:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--color-accent);
+}

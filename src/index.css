@@ -1,0 +1,234 @@
+/* ============================================
+   MERCH P.U.P. — Global Design System
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #FFFFFF;
+  --color-primary: #111111;
+  --color-accent: #FFE000;
+  --color-accent-dark: #D4BB00;
+  --color-gray-50: #FAFAFA;
+  --color-gray-100: #F4F4F4;
+  --color-gray-200: #E8E8E8;
+  --color-gray-400: #ABABAB;
+  --color-gray-600: #666666;
+  --color-gray-800: #333333;
+
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lifted: 0 6px 24px rgba(0, 0, 0, 0.12);
+
+  --max-width: 430px;
+  --screen-padding: 20px;
+}
+
+html, body {
+  height: 100%;
+  background: #E8E8E8;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ── Mobile shell ── */
+.app-shell {
+  width: 100%;
+  max-width: var(--max-width);
+  min-height: 100vh;
+  background: var(--color-bg);
+  position: relative;
+  overflow-x: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Screen wrapper ── */
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  padding: 15px 28px;
+  border-radius: var(--radius-full);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Black → Yellow on hover */
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.btn-primary:hover {
+  background: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* Yellow */
+.btn-accent {
+  background: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.btn-accent:hover {
+  background: var(--color-accent-dark);
+}
+
+/* Outlined */
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.btn-outline:hover {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+/* Modifiers */
+.btn-block {
+  width: 100%;
+}
+
+.btn-lg {
+  font-size: 18px;
+  padding: 18px 36px;
+}
+
+/* ── Form inputs ── */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-label {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-gray-600);
+}
+
+.input-field {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-gray-200);
+  background: var(--color-bg);
+  color: var(--color-primary);
+  outline: none;
+  transition: border-color 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input-field:focus {
+  border-color: var(--color-primary);
+}
+
+.input-field::placeholder {
+  color: var(--color-gray-400);
+}
+
+/* ── Text links ── */
+.text-link {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.text-link:hover {
+  color: var(--color-primary);
+}
+
+.text-link--bold {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ── Card base ── */
+.card {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-gray-200);
+  overflow: hidden;
+}
+
+/* ── Badge / chip ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: var(--color-gray-200);
+}

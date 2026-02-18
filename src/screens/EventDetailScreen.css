@@ -1,0 +1,409 @@
+/* ============================================
+   Event Detail Screen
+   ============================================ */
+
+.event-detail {
+  justify-content: flex-start;
+  background: var(--color-gray-50);
+}
+
+/* ── Hero image ── */
+.event-detail__hero {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-gray-200);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* Dark gradient so white text stays legible over any photo */
+.event-detail__hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.35) 0%,
+    rgba(0,0,0,0.0) 40%,
+    rgba(0,0,0,0.6) 100%
+  );
+  pointer-events: none;
+}
+
+/* Back + Cart row */
+.event-detail__hero-controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.event-detail__back {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.event-detail__back:hover {
+  background: rgba(0,0,0,0.55);
+  border-color: rgba(255,255,255,0.9);
+}
+
+/* ── Follow / Following toggle button ── */
+.event-detail__follow-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(255,255,255,0.65);
+  background: rgba(0,0,0,0.3);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s ease, border-color 0.15s ease,
+              color 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Not-following hover */
+.event-detail__follow-btn:hover:not(.event-detail__follow-btn--active) {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.9);
+}
+
+/* Following — solid yellow pill */
+.event-detail__follow-btn--active {
+  background: var(--color-accent);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Following hover — hint that clicking will unfollow */
+.event-detail__follow-btn--active:hover {
+  background: rgba(255,255,255,0.9);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.event-detail__follow-btn:active {
+  transform: scale(0.95);
+}
+
+/* Artist info at bottom of hero */
+.event-detail__hero-info {
+  position: relative;
+  z-index: 1;
+  padding: 0 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.event-detail__following-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  align-self: flex-start;
+}
+
+.event-detail__artist {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.05;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+}
+
+.event-detail__venue-line {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Tab toggle ── */
+.event-detail__tabs {
+  display: flex;
+  background: var(--color-bg);
+  border-bottom: 2px solid var(--color-gray-200);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.event-detail__tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 14px 8px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-gray-400);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  margin-bottom: -2px; /* sit on top of container border */
+}
+
+.event-detail__tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.event-detail__tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-size: 10px;
+  font-weight: 700;
+  border: 1.5px solid var(--color-primary);
+}
+
+/* ── Content area ── */
+.event-detail__content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+/* ── Merch grid ── */
+.event-detail__merch-panel {
+  padding: 16px var(--screen-padding);
+}
+
+.merch-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Merch card ── */
+.merch-card {
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+
+.merch-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 3px 3px 0 var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.merch-card__img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--color-gray-100);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 7px;
+}
+
+.merch-card__category {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.92);
+  color: var(--color-primary);
+  padding: 3px 7px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-gray-200);
+}
+
+.merch-card__info {
+  padding: 10px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.merch-card__name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+.merch-card__price {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+}
+
+/* ── Empty state ── */
+.event-detail__empty {
+  padding: 60px var(--screen-padding);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-detail__empty-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-primary);
+}
+
+.event-detail__empty-sub {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-600);
+}
+
+/* ── Event Details panel ── */
+.event-detail__info-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.event-detail__divider {
+  height: 2px;
+  background: var(--color-gray-100);
+}
+
+/* Info block */
+.event-detail__block {
+  padding: 20px var(--screen-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-detail__block--highlight {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--color-gray-50);
+}
+
+.event-detail__pickup-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.event-detail__block-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-gray-600);
+}
+
+.event-detail__block-body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-primary);
+}
+
+.event-detail__venue-name {
+  font-weight: 600;
+}
+
+/* Pickup time — big and legible */
+.event-detail__pickup-time {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+/* Step-by-step directions */
+.event-detail__directions {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.event-detail__direction-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.event-detail__step-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--color-primary);
+}
+
+.event-detail__step-text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-primary);
+  padding-top: 3px;
+}
