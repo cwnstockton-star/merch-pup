@@ -20,12 +20,12 @@
 .logo__wordmark {
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #111111;
 }
 
-.logo--sm .logo__wordmark { font-size: 9px;  letter-spacing: 0.1em;  }
+.logo--sm .logo__wordmark { font-size: 9px;  letter-spacing: 0.13em; }
 .logo--md .logo__wordmark { font-size: 11px; }
-.logo--lg .logo__wordmark { font-size: 15px; letter-spacing: 0.16em; }
-.logo--xl .logo__wordmark { font-size: 18px; letter-spacing: 0.18em; }
+.logo--lg .logo__wordmark { font-size: 15px; letter-spacing: 0.20em; }
+.logo--xl .logo__wordmark { font-size: 18px; letter-spacing: 0.22em; }
