@@ -148,7 +148,7 @@ export default function ProfileScreen() {
         </div>
 
         {/* App version */}
-        <p className="profile__version">Merch P.U.P. v0.1.0 - pre-release</p>
+        <p className="profile__version">Merch PUP v0.1.0 - pre-release</p>
 
       </main>
 

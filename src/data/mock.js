@@ -1,5 +1,5 @@
 /* ============================================
-   MERCH P.U.P. — Mock Data
+   MERCH PUP — Mock Data
    Swap these out for real API calls later.
    ============================================ */
 
@@ -24,7 +24,7 @@ export const mockEvents = [
     pickupTime: '6:00 PM – 7:30 PM',
     pickupDirections: [
       'Enter through the main entrance on Ola Ave.',
-      'Follow signs to the MERCH P.U.P. pickup station.',
+      'Follow signs to the MERCH PUP pickup station.',
       'Look for the yellow banner at the merch table - that\'s your lane.',
       'Show your QR code to the crew. Easy.',
     ],
@@ -83,7 +83,7 @@ export const mockEvents = [
     pickupDirections: [
       'Enter Amalie Arena through Gate A (Channelside Dr side).',
       'Take escalator to concourse level.',
-      'Follow MERCH P.U.P. signs to Section 101.',
+      'Follow MERCH PUP signs to Section 101.',
       'Show your QR, pick up your order.',
     ],
     description: 'Phoebe Bridgers, Julien Baker, and Lucy Dacus. Need we say more?',
