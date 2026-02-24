@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
-import MascotPlaceholder from '../components/MascotPlaceholder';
+import merchpupgoth1 from '../assets/merchpupgoth1.png';
 import { mockOrder } from '../data/mock';
 import './OrderConfirmationScreen.css';
 
@@ -49,7 +49,7 @@ export default function OrderConfirmationScreen() {
 
         {/* ── Mascot ── */}
         <div className="order-confirm__mascot-wrap">
-          <MascotPlaceholder size="sm" />
+          <img src={merchpupgoth1} alt="Merch Pup mascot" className="order-confirm__mascot-img" />
           <p className="order-confirm__mascot-quip">You're going to look so sick.</p>
         </div>
 

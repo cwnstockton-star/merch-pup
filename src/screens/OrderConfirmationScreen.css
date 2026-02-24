@@ -95,9 +95,10 @@
   padding: 4px var(--screen-padding) 0;
 }
 
-.order-confirm__mascot-wrap .mascot-placeholder--sm {
+.order-confirm__mascot-img {
   width: 140px;
   height: 140px;
+  object-fit: contain;
 }
 
 .order-confirm__mascot-quip {

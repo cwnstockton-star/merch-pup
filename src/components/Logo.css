@@ -6,38 +6,16 @@
   user-select: none;
 }
 
-/* ── Badge rings ── */
-.logo__outer-ring {
-  border-radius: 50%;
-  background: #111111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.logo__img {
+  display: block;
+  object-fit: contain;
 }
 
-.logo__yellow-ring {
-  border-radius: 50%;
-  background: #FFE000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo__inner {
-  border-radius: 50%;
-  background: #111111;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo__mp {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  color: #FFE000;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
+/* ── Size variants ── */
+.logo--sm .logo__img  { width: 44px;  height: 44px;  }
+.logo--md .logo__img  { width: 72px;  height: 72px;  }
+.logo--lg .logo__img  { width: 148px; height: 148px; }
+.logo--xl .logo__img  { width: 196px; height: 196px; }
 
 .logo__wordmark {
   font-family: 'Space Grotesk', sans-serif;
@@ -47,37 +25,7 @@
   color: #111111;
 }
 
-/* ── Size: sm ── */
-.logo--sm .logo__outer-ring { width: 44px; height: 44px; }
-.logo--sm .logo__yellow-ring { width: 38px; height: 38px; }
-.logo--sm .logo__inner { width: 30px; height: 30px; }
-.logo--sm .logo__mp { font-size: 14px; }
-.logo--sm .logo__wordmark { font-size: 9px; letter-spacing: 0.1em; }
-
-/* ── Size: md ── */
-.logo--md .logo__outer-ring { width: 72px; height: 72px; }
-.logo--md .logo__yellow-ring { width: 62px; height: 62px; }
-.logo--md .logo__inner { width: 50px; height: 50px; }
-.logo--md .logo__mp { font-size: 22px; }
+.logo--sm .logo__wordmark { font-size: 9px;  letter-spacing: 0.1em;  }
 .logo--md .logo__wordmark { font-size: 11px; }
-
-/* ── Size: lg ── */
-.logo--lg .logo__outer-ring { width: 148px; height: 148px; }
-.logo--lg .logo__yellow-ring { width: 128px; height: 128px; }
-.logo--lg .logo__inner { width: 104px; height: 104px; }
-.logo--lg .logo__mp { font-size: 46px; }
 .logo--lg .logo__wordmark { font-size: 15px; letter-spacing: 0.16em; }
-
-/* ── Size: xl ── */
-.logo--xl .logo__outer-ring { width: 196px; height: 196px; }
-.logo--xl .logo__yellow-ring { width: 170px; height: 170px; }
-.logo--xl .logo__inner { width: 140px; height: 140px; }
-.logo--xl .logo__mp { font-size: 62px; }
 .logo--xl .logo__wordmark { font-size: 18px; letter-spacing: 0.18em; }
-
-/* ── Theme: light (yellow badge on white bg) ── */
-.logo--light .logo__outer-ring { background: #FFE000; }
-.logo--light .logo__yellow-ring { background: #111111; }
-.logo--light .logo__inner { background: #FFE000; }
-.logo--light .logo__mp { color: #111111; }
-.logo--light .logo__wordmark { color: #111111; }
