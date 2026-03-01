@@ -1,28 +1,78 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import CartButton from '../components/CartButton';
 import BottomNav from '../components/BottomNav';
-import { mockMerch, mockCart } from '../data/mock';
+import { supabase } from '../lib/supabase';
+import { useCart } from '../context/CartContext';
 import './ProductDetailScreen.css';
 
 export default function ProductDetailScreen() {
   const { eventId, merchId } = useParams();
   const navigate = useNavigate();
 
-  const item = mockMerch.find((m) => m.id === merchId) ?? mockMerch[0];
-  const related = mockMerch.filter((m) => m.eventId === item.eventId && m.id !== item.id);
+  const [item, setItem] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const { addItem } = useCart();
 
   const [imgIndex, setImgIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(
-    item.sizes.length === 1 ? item.sizes[0] : null
-  );
+  const [selectedSize, setSelectedSize] = useState(null);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
+  useEffect(() => {
+    async function loadData() {
+      const { data: itemData } = await supabase
+        .from('merch_items')
+        .select('*')
+        .eq('id', merchId)
+        .single();
+
+      if (itemData) {
+        setItem(itemData);
+        // Pre-select size if there's only one
+        if (itemData.sizes?.length === 1) setSelectedSize(itemData.sizes[0]);
+
+        const { data: relatedData } = await supabase
+          .from('merch_items')
+          .select('*')
+          .eq('event_id', itemData.event_id)
+          .neq('id', itemData.id)
+          .order('created_at');
+        setRelated(relatedData || []);
+      }
+      setLoading(false);
+    }
+    loadData();
+  }, [merchId]);
+
   function handleAddToCart() {
+    const size = selectedSize || (sizes.length === 1 ? sizes[0] : 'One Size');
+    addItem(item, size, qty, eventId);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   }
+
+  if (loading) {
+    return (
+      <div className="screen" style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)' }}>Loading…</p>
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div className="screen" style={{ padding: 32 }}>
+        <p style={{ color: 'var(--color-gray-600)' }}>Item not found.</p>
+      </div>
+    );
+  }
+
+  // Treat the single image_url as a one-item array to keep carousel logic intact
+  const images = item.image_url ? [item.image_url] : [];
+  const sizes = item.sizes || [];
 
   return (
     <div className="product-detail screen">
@@ -40,62 +90,28 @@ export default function ProductDetailScreen() {
         </button>
 
         <span className="product-detail__header-label">Merch</span>
-        <CartButton count={mockCart.length} />
+        <CartButton />
       </div>
 
       {/* ── Scrollable body ── */}
       <main className="product-detail__body">
 
-        {/* ── Image carousel ── */}
+        {/* ── Image ── */}
         <div className="product-detail__carousel">
-          <div
-            className="product-detail__img"
-            style={{ backgroundImage: `url(${item.images[imgIndex]})` }}
-            role="img"
-            aria-label={`${item.name} - image ${imgIndex + 1} of ${item.images.length}`}
-          />
-
-          {item.images.length > 1 && (
-            <>
-              {/* Prev / Next tap zones */}
-              <button
-                className="product-detail__img-prev"
-                onClick={() => setImgIndex((i) => (i - 1 + item.images.length) % item.images.length)}
-                aria-label="Previous image"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-              </button>
-              <button
-                className="product-detail__img-next"
-                onClick={() => setImgIndex((i) => (i + 1) % item.images.length)}
-                aria-label="Next image"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-
-              {/* Dot indicators */}
-              <div className="product-detail__dots" role="tablist" aria-label="Image selector">
-                {item.images.map((_, i) => (
-                  <button
-                    key={i}
-                    role="tab"
-                    aria-selected={i === imgIndex}
-                    aria-label={`Image ${i + 1}`}
-                    className={`product-detail__dot ${i === imgIndex ? 'product-detail__dot--active' : ''}`}
-                    onClick={() => setImgIndex(i)}
-                  />
-                ))}
-              </div>
-
-              {/* Front / Back label */}
-              <span className="product-detail__img-label">
-                {imgIndex === 0 ? 'Front' : 'Back'}
-              </span>
-            </>
+          {images.length > 0 ? (
+            <div
+              className="product-detail__img"
+              style={{ backgroundImage: `url(${images[imgIndex]})` }}
+              role="img"
+              aria-label={`${item.name} - image ${imgIndex + 1}`}
+            />
+          ) : (
+            <div
+              className="product-detail__img"
+              style={{ background: 'var(--color-gray-100)' }}
+              role="img"
+              aria-label={`${item.name} - no image`}
+            />
           )}
         </div>
 
@@ -103,22 +119,24 @@ export default function ProductDetailScreen() {
         <div className="product-detail__info">
 
           <div className="product-detail__meta-row">
-            <span className="product-detail__category badge">{item.category}</span>
-            <span className="product-detail__price">${item.price}</span>
+            {item.category && (
+              <span className="product-detail__category badge">{item.category}</span>
+            )}
+            <span className="product-detail__price">${parseFloat(item.price).toFixed(2)}</span>
           </div>
 
           <h1 className="product-detail__name">{item.name}</h1>
-          <p className="product-detail__desc">{item.description}</p>
+          {item.description && <p className="product-detail__desc">{item.description}</p>}
 
           {/* ── Size selector ── */}
-          {!(item.sizes.length === 1 && item.sizes[0] === 'One Size') && (
+          {sizes.length > 0 && !(sizes.length === 1 && sizes[0] === 'One Size') && (
             <div className="product-detail__size-section">
               <p className="product-detail__field-label">
                 Size
                 {selectedSize && <span className="product-detail__size-chosen"> — {selectedSize}</span>}
               </p>
               <div className="product-detail__sizes" role="group" aria-label="Select size">
-                {item.sizes.map((s) => (
+                {sizes.map((s) => (
                   <button
                     key={s}
                     className={`product-detail__size-pill ${selectedSize === s ? 'product-detail__size-pill--active' : ''}`}
@@ -163,7 +181,7 @@ export default function ProductDetailScreen() {
           <button
             className={`btn btn-primary product-detail__add-btn ${added ? 'product-detail__add-btn--added' : ''}`}
             onClick={handleAddToCart}
-            disabled={!selectedSize && item.sizes.length > 1}
+            disabled={sizes.length > 1 && !selectedSize}
             aria-live="polite"
           >
             {added ? (
@@ -179,7 +197,9 @@ export default function ProductDetailScreen() {
                   <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                 </svg>
-                {!selectedSize && item.sizes.length > 1 ? 'Select a Size' : `Pre-Order - $${item.price * qty}`}
+                {sizes.length > 1 && !selectedSize
+                  ? 'Select a Size'
+                  : `Pre-Order — $${(parseFloat(item.price) * qty).toFixed(2)}`}
               </>
             )}
           </button>
@@ -200,12 +220,15 @@ export default function ProductDetailScreen() {
                   >
                     <div
                       className="product-detail__related-img"
-                      style={{ backgroundImage: `url(${rel.images[0]})` }}
+                      style={rel.image_url
+                        ? { backgroundImage: `url(${rel.image_url})` }
+                        : { background: 'var(--color-gray-100)' }
+                      }
                       aria-hidden="true"
                     />
                     <div className="product-detail__related-info">
                       <p className="product-detail__related-name">{rel.name}</p>
-                      <p className="product-detail__related-price">${rel.price}</p>
+                      <p className="product-detail__related-price">${parseFloat(rel.price).toFixed(2)}</p>
                     </div>
                   </article>
                 ))}

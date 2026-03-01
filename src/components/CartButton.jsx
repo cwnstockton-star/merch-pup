@@ -1,13 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import './CartButton.css';
 
-/**
- * CartButton — floating cart icon for screen headers.
- * Only renders when count > 0.
- * Drop this into any screen's header row to get the persistent cart access.
- */
-export default function CartButton({ count = 0 }) {
+export default function CartButton() {
   const navigate = useNavigate();
+  const { itemCount: count } = useCart();
   if (count === 0) return null;
 
   return (

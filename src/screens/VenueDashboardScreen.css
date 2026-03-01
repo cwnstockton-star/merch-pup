@@ -1,0 +1,208 @@
+/* ============================================
+   Venue Dashboard Screen
+   ============================================ */
+
+.venue-dash {
+  background: var(--color-bg);
+}
+
+/* ── Header ── */
+.venue-dash__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px var(--screen-padding);
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+.venue-dash__signout {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.venue-dash__signout:hover {
+  color: var(--color-primary);
+}
+
+/* ── Page top ── */
+.venue-dash__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px var(--screen-padding) 12px;
+}
+
+.venue-dash__title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.venue-dash__create-btn {
+  flex-shrink: 0;
+  font-size: 14px;
+  padding: 12px 20px;
+}
+
+/* ── Content ── */
+.venue-dash__content {
+  padding: 8px var(--screen-padding) 48px;
+}
+
+/* ── Empty / loading states ── */
+.venue-dash__state-msg {
+  font-size: 15px;
+  color: var(--color-gray-600);
+}
+
+.venue-dash__state-sub {
+  font-size: 14px;
+  color: var(--color-gray-400);
+}
+
+.venue-dash__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px 0;
+  text-align: center;
+}
+
+/* ── Stripe Connect ── */
+.venue-dash__stripe-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 12px var(--screen-padding) 0;
+  padding: 14px 16px;
+  background: #fff8ed;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+}
+
+.venue-dash__stripe-banner-text {
+  font-size: 13px;
+  color: var(--color-gray-800);
+  line-height: 1.5;
+}
+
+.venue-dash__stripe-btn {
+  align-self: flex-start;
+  padding: 10px 18px;
+  font-size: 13px;
+}
+
+.venue-dash__stripe-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px var(--screen-padding) 0;
+  padding: 8px 14px;
+  background: #edfaf3;
+  border: 1.5px solid #34c770;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a7a40;
+}
+
+/* ── Event list ── */
+.venue-dash__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Event card ── */
+.venue-event-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  transition: border-color 0.15s;
+  cursor: pointer;
+}
+
+.venue-event-card:hover {
+  border-color: var(--color-primary);
+}
+
+.venue-event-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.venue-event-card__name {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.venue-event-card__meta {
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
+.venue-event-card__code-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.venue-event-card__code-label {
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+}
+
+.venue-event-card__code {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+}
+
+.venue-event-card__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-gray-400);
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+
+.venue-event-card__arrow:hover {
+  color: var(--color-primary);
+  background: var(--color-gray-100);
+}

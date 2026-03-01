@@ -1,21 +1,46 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
-import { mockEvents } from '../data/mock';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import './ConnectEventScreen.css';
 
 export default function ConnectEventScreen() {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const [code, setCode] = useState('');
   const [scanning, setScanning] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
-  function handleCodeSubmit(e) {
+  async function handleCodeSubmit(e) {
     e.preventDefault();
+    setError('');
     const trimmed = code.trim().toUpperCase();
-    // Match typed code against mock events; fall back to first event
-    const matched = mockEvents.find((ev) => ev.code.toUpperCase() === trimmed) ?? mockEvents[0];
-    navigate(`/events/${matched.id}`, { state: { autoFollowed: true } });
+    setLoading(true);
+
+    // Look up event by code
+    const { data: event, error: fetchError } = await supabase
+      .from('events')
+      .select('id')
+      .eq('event_code', trimmed)
+      .single();
+
+    if (fetchError || !event) {
+      setError('Event code not found. Double-check the code and try again.');
+      setLoading(false);
+      return;
+    }
+
+    // Record the connection (upsert so re-connecting is idempotent)
+    await supabase.from('event_connections').upsert(
+      { fan_id: session.user.id, event_id: event.id },
+      { onConflict: 'fan_id,event_id' }
+    );
+
+    setLoading(false);
+    navigate(`/events/${event.id}`, { state: { autoFollowed: true } });
   }
 
   function handleScanTrigger() {
@@ -24,11 +49,9 @@ export default function ConnectEventScreen() {
 
   function handleFileChange(e) {
     if (e.target.files?.length) {
-      // Mock: any scan resolves to the first event and auto-follows it
+      // QR scanning requires a library — keeping this as a visual placeholder for now
       setScanning(true);
-      setTimeout(() => {
-        navigate(`/events/${mockEvents[0].id}`, { state: { autoFollowed: true } });
-      }, 1200);
+      setTimeout(() => setScanning(false), 1200);
     }
   }
 
@@ -55,7 +78,6 @@ export default function ConnectEventScreen() {
       {/* Content */}
       <div className="connect__content">
 
-        {/* Heading */}
         <div className="connect__heading-wrap">
           <div className="connect__heading-highlight" aria-hidden="true" />
           <h1 className="connect__heading">
@@ -67,7 +89,6 @@ export default function ConnectEventScreen() {
           Your venue or artist will provide a code or QR link.
         </p>
 
-        {/* Two equal cards */}
         <div className="connect__cards">
 
           {/* Card A — Enter Code */}
@@ -84,9 +105,9 @@ export default function ConnectEventScreen() {
               <input
                 className="input-field connect__code-input"
                 type="text"
-                placeholder="e.g. MID-2026"
+                placeholder="e.g. ABC123"
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={(e) => { setCode(e.target.value); setError(''); }}
                 aria-label="Event code"
                 autoCapitalize="characters"
                 spellCheck={false}
@@ -95,14 +116,22 @@ export default function ConnectEventScreen() {
                 type="submit"
                 className="connect__code-submit"
                 aria-label="Submit code"
-                disabled={!code.trim()}
+                disabled={!code.trim() || loading}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
+                {loading ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="connect__scan-spin" aria-hidden="true">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                )}
               </button>
             </form>
+
+            {error && <p className="auth-error" style={{ marginTop: 8 }}>{error}</p>}
           </div>
 
           {/* Card B — Scan Ticket */}
@@ -139,7 +168,6 @@ export default function ConnectEventScreen() {
               {scanning ? 'Reading...' : 'Open Camera'}
             </button>
 
-            {/* Hidden file input triggers camera on mobile */}
             <input
               ref={fileInputRef}
               type="file"
@@ -154,7 +182,6 @@ export default function ConnectEventScreen() {
 
         </div>
 
-        {/* Skip link */}
         <button
           className="text-link connect__skip"
           onClick={() => navigate('/home')}

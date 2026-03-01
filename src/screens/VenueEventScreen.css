@@ -1,0 +1,406 @@
+/* ============================================
+   Venue Event Screen
+   ============================================ */
+
+.venue-event {
+  background: var(--color-bg);
+}
+
+/* ── Header ── */
+.venue-event__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--color-gray-200);
+}
+
+/* ── Content ── */
+.venue-event__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px var(--screen-padding) 60px;
+}
+
+.venue-event__title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 8px;
+}
+
+.venue-event__meta {
+  font-size: 14px;
+  color: var(--color-gray-600);
+  margin-top: 4px;
+}
+
+/* ── Event code card ── */
+.venue-event__code-card {
+  background: var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.venue-event__code-label {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.venue-event__code {
+  font-family: var(--font-heading);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.venue-event__code-hint {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.venue-event__copy-btn {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.venue-event__copy-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+/* ── Merch section ── */
+.venue-event__merch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.venue-event__section-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.venue-event__add-btn {
+  font-size: 14px;
+  padding: 10px 18px;
+}
+
+.venue-event__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 40px 0;
+  text-align: center;
+  color: var(--color-gray-400);
+  font-size: 14px;
+}
+
+/* ── Merch list ── */
+.venue-event__merch-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.venue-merch-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+}
+
+.venue-merch-card__img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.venue-merch-card__img--empty {
+  background: var(--color-gray-100);
+}
+
+.venue-merch-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.venue-merch-card__name {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.venue-merch-card__price {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.venue-merch-card__meta {
+  font-size: 12px;
+  color: var(--color-gray-600);
+}
+
+.venue-merch-card__qty {
+  color: var(--color-gray-400);
+}
+
+/* ════════════════════════════════
+   Tab switcher
+════════════════════════════════ */
+.venue-event__tabs {
+  display: flex;
+  border-bottom: 2px solid var(--color-gray-200);
+  gap: 0;
+}
+
+.venue-event__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.venue-event__tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.venue-event__tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
+
+/* ════════════════════════════════
+   Orders — stats row
+════════════════════════════════ */
+.venue-orders__stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 16px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-md);
+}
+
+.venue-orders__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.venue-orders__stat-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--color-gray-200);
+}
+
+.venue-orders__stat-val {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.venue-orders__stat-val--pending {
+  color: var(--color-accent);
+}
+
+.venue-orders__stat-val--done {
+  color: #34c770;
+}
+
+.venue-orders__stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ════════════════════════════════
+   Orders — list
+════════════════════════════════ */
+.venue-orders__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Order card ── */
+.venue-order-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s;
+}
+
+/* New orders that arrived via realtime pulse orange */
+.venue-order-card--new {
+  border-color: var(--color-accent);
+  animation: order-pulse 1.2s ease-out forwards;
+}
+
+@keyframes order-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.35); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 107, 0, 0); }
+  100% { box-shadow: none; }
+}
+
+/* Picked-up cards are visually quieter */
+.venue-order-card--done {
+  opacity: 0.55;
+}
+
+.venue-order-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.venue-order-card__code {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+}
+
+.venue-order-card__time {
+  font-size: 12px;
+  color: var(--color-gray-400);
+  margin-top: 2px;
+}
+
+/* Status pill */
+.venue-order-card__status {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.venue-order-card__status--paid {
+  background: rgba(255, 107, 0, 0.12);
+  color: var(--color-accent);
+}
+
+.venue-order-card__status--done {
+  background: rgba(52, 199, 112, 0.12);
+  color: #1a7a40;
+}
+
+/* Items list */
+.venue-order-card__items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.venue-order-card__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-gray-800);
+}
+
+.venue-order-card__item-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.venue-order-card__item-size {
+  font-size: 12px;
+  color: var(--color-gray-400);
+  background: var(--color-gray-100);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.venue-order-card__item-qty {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-gray-600);
+}
+
+/* Footer: total + button */
+.venue-order-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.venue-order-card__total {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.venue-order-card__pickup-btn {
+  padding: 9px 16px;
+  font-size: 13px;
+}

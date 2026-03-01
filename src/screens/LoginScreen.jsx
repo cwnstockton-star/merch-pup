@@ -4,13 +4,12 @@ import Logo from '../components/Logo';
 import { useAuth } from '../context/AuthContext';
 import './CreateAccountScreen.css';
 
-export default function CreateAccountScreen() {
+export default function LoginScreen() {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
-  const [form, setForm] = useState({ name: '', phone: '', email: '', password: '' });
+  const { signIn } = useAuth();
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [confirmed, setConfirmed] = useState(false);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -20,62 +19,22 @@ export default function CreateAccountScreen() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { error, needsConfirmation } = await signUp(form.email, form.password, {
-      name: form.name,
-      phone: form.phone,
-      role: 'fan',
-    });
+    const { error } = await signIn(form.email, form.password);
     setLoading(false);
     if (error) {
       setError(error.message);
-    } else if (needsConfirmation) {
-      setConfirmed(true); // show "check your email" message
     } else {
-      navigate('/connect-event');
+      // AuthContext will have fetched the profile; ProtectedRoute will redirect
+      // venue users to /venue/dashboard automatically from /home
+      navigate('/home');
     }
-  }
-
-  if (confirmed) {
-    return (
-      <div className="create screen">
-        <div className="splash__grain" aria-hidden="true" />
-        <div className="splash__top-bar" />
-        <div className="create__nav">
-          <div style={{ width: 32 }} />
-          <Logo size="sm" />
-          <div style={{ width: 32 }} />
-        </div>
-        <div className="create__content" style={{ textAlign: 'center', alignItems: 'center' }}>
-          <div className="create__heading-wrap">
-            <div className="create__heading-highlight" aria-hidden="true" />
-            <h1 className="create__heading">Check your<br />email.</h1>
-          </div>
-          <p className="create__sub" style={{ marginTop: 16 }}>
-            We sent a confirmation link to <strong>{form.email}</strong>.
-            Click it to activate your account, then sign in.
-          </p>
-          <div className="create__actions" style={{ marginTop: 32 }}>
-            <button
-              className="btn btn-primary btn-lg btn-block create__cta"
-              onClick={() => navigate('/login')}
-            >
-              Go to Sign In
-            </button>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
     <div className="create screen">
-      {/* Grain overlay */}
       <div className="splash__grain" aria-hidden="true" />
-
-      {/* Yellow top bar */}
       <div className="splash__top-bar" />
 
-      {/* Nav row */}
       <div className="create__nav">
         <button
           className="create__back"
@@ -87,57 +46,22 @@ export default function CreateAccountScreen() {
           </svg>
         </button>
         <Logo size="sm" />
-        {/* Spacer keeps logo visually centered */}
         <div style={{ width: 32 }} />
       </div>
 
-      {/* Content */}
       <div className="create__content">
-
-        {/* Heading with yellow slab */}
         <div className="create__heading-wrap">
           <div className="create__heading-highlight" aria-hidden="true" />
           <h1 className="create__heading">
-            Let's fetch<br />your details.
+            Welcome<br />back.
           </h1>
         </div>
 
         <p className="create__sub">
-          One account. Every show. All your merch - waiting at the table.
+          Sign in to see your merch, your events, your QR codes.
         </p>
 
-        {/* Form */}
         <form className="create__form" onSubmit={handleSubmit} noValidate>
-          <div className="input-group">
-            <label className="input-label" htmlFor="name">Full Name</label>
-            <input
-              className="input-field"
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Jordan Lee"
-              autoComplete="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label" htmlFor="phone">Phone Number</label>
-            <input
-              className="input-field"
-              id="phone"
-              name="phone"
-              type="tel"
-              placeholder="+1 (813) 555-0182"
-              autoComplete="tel"
-              value={form.phone}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
           <div className="input-group">
             <label className="input-label" htmlFor="email">Email</label>
             <input
@@ -161,7 +85,7 @@ export default function CreateAccountScreen() {
               name="password"
               type="password"
               placeholder="••••••••"
-              autoComplete="new-password"
+              autoComplete="current-password"
               value={form.password}
               onChange={handleChange}
               required
@@ -176,17 +100,17 @@ export default function CreateAccountScreen() {
               className="btn btn-primary btn-lg btn-block create__cta"
               disabled={loading}
             >
-              {loading ? 'Creating account…' : 'Create Account'}
+              {loading ? 'Signing in…' : 'Sign In'}
             </button>
 
             <p className="create__signin">
-              Already have an account?{' '}
+              Don't have an account?{' '}
               <button
                 type="button"
                 className="text-link text-link--bold"
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/create-account')}
               >
-                Sign in
+                Create one
               </button>
             </p>
 
@@ -202,7 +126,6 @@ export default function CreateAccountScreen() {
             </p>
           </div>
         </form>
-
       </div>
     </div>
   );

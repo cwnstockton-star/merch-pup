@@ -47,7 +47,7 @@ export default function SplashScreen() {
 
           <button
             className="text-link"
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/login')}
           >
             Already have an account?{' '}
             <span className="text-link--bold">Sign in</span>

@@ -1,0 +1,72 @@
+/* ============================================
+   Venue Add Merch Screen
+   ============================================ */
+
+/* ── Photo upload ── */
+.merch-upload__zone {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 240px;
+  border: 2px dashed var(--color-gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.merch-upload__zone:hover {
+  border-color: var(--color-primary);
+}
+
+.merch-upload__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--color-gray-400);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.merch-upload__preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Size buttons ── */
+.merch-sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.merch-size-btn {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-gray-200);
+  background: transparent;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.merch-size-btn--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.merch-size-btn:hover:not(.merch-size-btn--active) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}

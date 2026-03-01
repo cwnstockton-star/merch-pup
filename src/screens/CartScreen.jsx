@@ -1,40 +1,71 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
-import { mockCart, mockEvents } from '../data/mock';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import './CartScreen.css';
 
 export default function CartScreen() {
   const navigate = useNavigate();
+  const { items, itemCount, subtotal, removeItem, updateQuantity } = useCart();
+  const { session } = useAuth();
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [error, setError] = useState('');
 
-  // Local copy so quantity/remove edits feel live
-  const [items, setItems] = useState(mockCart);
+  // Fetch event names for grouping labels
+  const [eventNames, setEventNames] = useState({});
+  useEffect(() => {
+    const eventIds = [...new Set(items.map((i) => i.eventId).filter(Boolean))];
+    if (eventIds.length === 0) return;
+    supabase
+      .from('events')
+      .select('id, artist, venue_name')
+      .in('id', eventIds)
+      .then(({ data }) => {
+        if (!data) return;
+        const map = {};
+        data.forEach((e) => { map[e.id] = `${e.artist} – ${e.venue_name}`; });
+        setEventNames(map);
+      });
+  }, [items]);
 
-  const subtotal = items.reduce((sum, i) => sum + i.merch.price * i.quantity, 0);
-  const serviceFee = items.length > 0 ? 1.50 : 0;
+  const serviceFee = itemCount > 0 ? 1.50 : 0;
   const total = subtotal + serviceFee;
-
-  function updateQty(id, delta) {
-    setItems((prev) =>
-      prev
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + delta } : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  }
-
-  function removeItem(id) {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-  }
 
   // Group items by event
   const byEvent = items.reduce((acc, item) => {
-    const key = item.eventId;
+    const key = item.eventId || 'no-event';
     if (!acc[key]) acc[key] = [];
     acc[key].push(item);
     return acc;
   }, {});
+
+  async function handleCheckout() {
+    setError('');
+    setCheckingOut(true);
+    try {
+      const origin = window.location.origin;
+      const firstEventId = items[0]?.eventId || null;
+      const payload = {
+        items: items.map((i) => ({ id: i.merch.id, size: i.size, quantity: i.quantity })),
+        eventId: firstEventId,
+        fanId: session.user.id,
+        successUrl: `${origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${origin}/cart`,
+      };
+
+      const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
+        body: payload,
+      });
+
+      if (fnError || data?.error) throw new Error(fnError?.message || data.error);
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+      setCheckingOut(false);
+    }
+  }
 
   return (
     <div className="cart screen">
@@ -79,91 +110,81 @@ export default function CartScreen() {
         <>
           {/* ── Item list ── */}
           <main className="cart__content">
-            {Object.entries(byEvent).map(([eventId, eventItems]) => {
-              const event = mockEvents.find((e) => e.id === eventId);
-              return (
-                <section key={eventId} className="cart__event-group">
+            {Object.entries(byEvent).map(([eventId, eventItems]) => (
+              <section key={eventId} className="cart__event-group">
 
-                  {/* Event label */}
-                  <div className="cart__event-label">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"/>
-                      <circle cx="12" cy="11" r="3"/>
-                    </svg>
-                    {event ? `${event.artist} - ${event.venue}` : 'Event'}
-                  </div>
+                {/* Event label */}
+                <div className="cart__event-label">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"/>
+                    <circle cx="12" cy="11" r="3"/>
+                  </svg>
+                  {eventNames[eventId] || 'Event'}
+                </div>
 
-                  {/* Items */}
-                  <ul className="cart__items">
-                    {eventItems.map((item) => (
-                      <li key={item.id} className="cart__item">
+                {/* Items */}
+                <ul className="cart__items">
+                  {eventItems.map((item) => (
+                    <li key={item.id} className="cart__item">
 
-                        {/* Thumbnail */}
-                        <div
-                          className="cart__item-img"
-                          style={{ backgroundImage: `url(${item.merch.images[0]})` }}
-                          aria-hidden="true"
-                        />
+                      {/* Thumbnail */}
+                      <div
+                        className="cart__item-img"
+                        style={item.merch.image_url
+                          ? { backgroundImage: `url(${item.merch.image_url})` }
+                          : { background: 'var(--color-gray-100)' }
+                        }
+                        aria-hidden="true"
+                      />
 
-                        {/* Details */}
-                        <div className="cart__item-details">
-                          <p className="cart__item-name">{item.merch.name}</p>
-                          {item.size !== 'One Size' && (
-                            <p className="cart__item-meta">Size: {item.size}</p>
-                          )}
-                          <p className="cart__item-price">${item.merch.price * item.quantity}</p>
+                      {/* Details */}
+                      <div className="cart__item-details">
+                        <p className="cart__item-name">{item.merch.name}</p>
+                        {item.size && item.size !== 'One Size' && (
+                          <p className="cart__item-meta">Size: {item.size}</p>
+                        )}
+                        <p className="cart__item-price">${(parseFloat(item.merch.price) * item.quantity).toFixed(2)}</p>
 
-                          {/* Stepper + remove */}
-                          <div className="cart__item-actions">
-                            <div className="cart__stepper">
-                              <button
-                                className="cart__stepper-btn"
-                                onClick={() => updateQty(item.id, -1)}
-                                aria-label={`Decrease quantity of ${item.merch.name}`}
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                                  <line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
-                              </button>
-                              <span className="cart__stepper-val" aria-live="polite">{item.quantity}</span>
-                              <button
-                                className="cart__stepper-btn"
-                                onClick={() => updateQty(item.id, 1)}
-                                aria-label={`Increase quantity of ${item.merch.name}`}
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
-                              </button>
-                            </div>
-
+                        {/* Stepper + remove */}
+                        <div className="cart__item-actions">
+                          <div className="cart__stepper">
                             <button
-                              className="cart__remove"
-                              onClick={() => removeItem(item.id)}
-                              aria-label={`Remove ${item.merch.name}`}
+                              className="cart__stepper-btn"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              aria-label={`Decrease quantity of ${item.merch.name}`}
                             >
-                              Remove
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                              </svg>
+                            </button>
+                            <span className="cart__stepper-val" aria-live="polite">{item.quantity}</span>
+                            <button
+                              className="cart__stepper-btn"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              aria-label={`Increase quantity of ${item.merch.name}`}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+                                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                              </svg>
                             </button>
                           </div>
+
+                          <button
+                            className="cart__remove"
+                            onClick={() => removeItem(item.id)}
+                            aria-label={`Remove ${item.merch.name}`}
+                          >
+                            Remove
+                          </button>
                         </div>
+                      </div>
 
-                      </li>
-                    ))}
-                  </ul>
+                    </li>
+                  ))}
+                </ul>
 
-                  {/* Pickup info strip */}
-                  {event && (
-                    <div className="cart__pickup-strip">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                      </svg>
-                      Pickup window: <strong>{event.pickupTime}</strong>
-                    </div>
-                  )}
-
-                </section>
-              );
-            })}
+              </section>
+            ))}
 
             {/* ── Order summary ── */}
             <div className="cart__summary">
@@ -196,14 +217,16 @@ export default function CartScreen() {
 
           {/* ── Sticky checkout footer ── */}
           <div className="cart__footer">
+            {error && <p className="auth-error" style={{ marginBottom: 8 }}>{error}</p>}
             <button
               className="btn btn-primary cart__checkout-btn"
-              onClick={() => navigate('/order-confirmation')}
+              onClick={handleCheckout}
+              disabled={checkingOut}
             >
-              Place Order - ${total.toFixed(2)}
+              {checkingOut ? 'Redirecting to payment…' : `Pay Now — $${total.toFixed(2)}`}
             </button>
             <p className="cart__footer-note">
-              No payment today - you'll be charged at pickup.
+              Secure checkout via Stripe. Your merch is held until the show.
             </p>
           </div>
         </>

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import CartButton from '../components/CartButton';
-import { mockUser, mockCart } from '../data/mock';
+import { useAuth } from '../context/AuthContext';
 import './ProfileScreen.css';
 
 const SECTIONS = [
@@ -67,18 +67,29 @@ function ChevronRight() {
 
 // Derive initials from name
 function getInitials(name) {
+  if (!name) return '?';
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
 export default function ProfileScreen() {
   const navigate = useNavigate();
+  const { profile, session, signOut } = useAuth();
+
+  const name  = profile?.name  || session?.user?.user_metadata?.name  || '';
+  const email = profile?.email || session?.user?.email                 || '';
+  const phone = profile?.phone || session?.user?.user_metadata?.phone  || '';
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/');
+  }
 
   return (
     <div className="profile screen">
       {/* ── Header ── */}
       <header className="profile__header">
         <span className="profile__header-title">Profile</span>
-        <CartButton count={mockCart.length} />
+        <CartButton />
       </header>
 
       <main className="profile__content">
@@ -86,12 +97,12 @@ export default function ProfileScreen() {
         {/* ── Profile hero ── */}
         <div className="profile__hero">
           <div className="profile__avatar" aria-hidden="true">
-            {getInitials(mockUser.name)}
+            {getInitials(name)}
           </div>
           <div className="profile__identity">
-            <h1 className="profile__name">{mockUser.name}</h1>
-            <p className="profile__email">{mockUser.email}</p>
-            <p className="profile__phone">{mockUser.phone}</p>
+            <h1 className="profile__name">{name || 'Your Profile'}</h1>
+            <p className="profile__email">{email}</p>
+            {phone && <p className="profile__phone">{phone}</p>}
           </div>
           <button
             className="btn btn-outline profile__edit-btn"
@@ -131,7 +142,7 @@ export default function ProfileScreen() {
             <li>
               <button
                 className="profile__row profile__row--danger"
-                onClick={() => navigate('/')}
+                onClick={handleSignOut}
               >
                 <span className="profile__row-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

@@ -1,31 +1,53 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import CartButton from '../components/CartButton';
 import MascotPlaceholder from '../components/MascotPlaceholder';
-import { mockEvents, mockCart, mockOrder } from '../data/mock';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
+import { formatEventDate } from '../lib/utils';
 import './MyEventsScreen.css';
-
-// Events the user is following
-const followedEvents = mockEvents.filter((e) => e.following);
-
-// Event IDs that have a completed order
-const orderedEventIds = new Set([mockOrder.event.id]);
 
 export default function MyEventsScreen() {
   const navigate = useNavigate();
+  const { session } = useAuth();
+  const [connectedEvents, setConnectedEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      const { data: connections } = await supabase
+        .from('event_connections')
+        .select('event_id, events(*)')
+        .eq('fan_id', session.user.id)
+        .order('connected_at', { ascending: false });
+
+      setConnectedEvents(
+        (connections || []).map((c) => c.events).filter(Boolean)
+      );
+      setLoading(false);
+    }
+    loadData();
+  }, [session.user.id]);
+
+  if (loading) {
+    return (
+      <div className="my-events screen" style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)' }}>Loading…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="my-events screen">
 
-      {/* ── Header ── */}
       <div className="my-events__header">
         <h1 className="my-events__title">My Events</h1>
-        <CartButton count={mockCart.length} />
+        <CartButton />
       </div>
 
-      {followedEvents.length === 0 ? (
+      {connectedEvents.length === 0 ? (
 
-        /* ── Empty state ── */
         <div className="my-events__empty">
           <MascotPlaceholder size="md" />
           <p className="my-events__empty-title">No shows yet.</p>
@@ -37,7 +59,7 @@ export default function MyEventsScreen() {
               className="btn btn-primary my-events__scan-btn"
               onClick={() => navigate('/connect-event')}
             >
-              Scan Ticket
+              Connect to an Event
             </button>
             <button
               className="btn btn-outline my-events__browse-btn"
@@ -50,78 +72,59 @@ export default function MyEventsScreen() {
 
       ) : (
 
-        /* ── Event list ── */
         <main className="my-events__content">
           <ul className="my-events__list">
-            {followedEvents.map((event) => {
-              const hasOrder = orderedEventIds.has(event.id);
-              return (
-                <li key={event.id}>
-                  <article className="my-events__card">
+            {connectedEvents.map((event) => (
+              <li key={event.id}>
+                <article className="my-events__card">
 
-                    {/* Hero image */}
-                    <div
-                      className="my-events__card-img"
-                      style={{ backgroundImage: `url(${event.heroImage})` }}
-                      role="img"
-                      aria-label={`${event.artist} hero image`}
+                  <div
+                    className="my-events__card-img"
+                    style={event.image_url
+                      ? { backgroundImage: `url(${event.image_url})` }
+                      : { background: 'linear-gradient(160deg, #1a1a1a 0%, #444 100%)' }
+                    }
+                    role="img"
+                    aria-label={`${event.artist || event.name} hero image`}
+                  >
+                    <div className="my-events__card-img-overlay" aria-hidden="true" />
+                    <div className="my-events__card-img-info">
+                      <h2 className="my-events__card-artist">{event.artist || event.name}</h2>
+                      <p className="my-events__card-meta">
+                        {event.venue_name}&nbsp;&nbsp;·&nbsp;&nbsp;{formatEventDate(event.date)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="my-events__card-footer">
+                    <button
+                      className="btn btn-primary my-events__merch-btn"
+                      onClick={() => navigate(`/events/${event.id}`)}
                     >
-                      <div className="my-events__card-img-overlay" aria-hidden="true" />
-                      <div className="my-events__card-img-info">
-                        <h2 className="my-events__card-artist">{event.artist}</h2>
-                        <p className="my-events__card-meta">
-                          {event.venue}&nbsp;&nbsp;·&nbsp;&nbsp;{event.date}
-                        </p>
-                      </div>
-                    </div>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                      </svg>
+                      View Merch
+                    </button>
 
-                    {/* Footer */}
-                    <div className="my-events__card-footer">
-                      {hasOrder ? (
-                        <button
-                          className="btn my-events__qr-btn"
-                          onClick={() => navigate('/order-confirmation')}
-                        >
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <rect x="3" y="3" width="7" height="7" rx="1" />
-                            <rect x="14" y="3" width="7" height="7" rx="1" />
-                            <rect x="3" y="14" width="7" height="7" rx="1" />
-                            <path d="M14 14h2v2h-2zM18 14h3M14 18v3M18 18h3v3h-3z" />
-                          </svg>
-                          View QR Code
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-primary my-events__merch-btn"
-                          onClick={() => navigate(`/events/${event.id}`)}
-                        >
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                          </svg>
-                          View Merch
-                        </button>
-                      )}
+                    <button
+                      className="my-events__detail-link"
+                      onClick={() => navigate(`/events/${event.id}`)}
+                      aria-label={`View details for ${event.artist || event.name}`}
+                    >
+                      Event details
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  </div>
 
-                      <button
-                        className="my-events__detail-link"
-                        onClick={() => navigate(`/events/${event.id}`)}
-                        aria-label={`View details for ${event.artist}`}
-                      >
-                        Event details
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                      </button>
-                    </div>
-
-                  </article>
-                </li>
-              );
-            })}
+                </article>
+              </li>
+            ))}
           </ul>
 
-          {/* Nudge to add more events */}
           <div className="my-events__add-wrap">
             <button
               className="my-events__add-btn"
