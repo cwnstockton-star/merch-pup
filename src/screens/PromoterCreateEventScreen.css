@@ -3,19 +3,19 @@
    (extends CreateAccountScreen.css styles)
    ============================================ */
 
-.venue-form {
+.promoter-form {
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
-.venue-form__section {
+.promoter-form__section {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.venue-form__section-title {
+.promoter-form__section-title {
   font-family: var(--font-heading);
   font-size: 11px;
   font-weight: 700;
@@ -26,7 +26,7 @@
   border-bottom: 2px solid var(--color-gray-200);
 }
 
-.venue-form__optional {
+.promoter-form__optional {
   font-weight: 400;
   text-transform: none;
   letter-spacing: 0;
@@ -34,7 +34,7 @@
   color: var(--color-gray-400);
 }
 
-.venue-form__hint {
+.promoter-form__hint {
   font-size: 12px;
   color: var(--color-gray-400);
   margin-top: -8px;

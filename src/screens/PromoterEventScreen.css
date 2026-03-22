@@ -2,12 +2,12 @@
    Venue Event Screen
    ============================================ */
 
-.venue-event {
+.promoter-event {
   background: var(--color-bg);
 }
 
 /* ── Header ── */
-.venue-event__header {
+.promoter-event__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,14 +16,14 @@
 }
 
 /* ── Content ── */
-.venue-event__content {
+.promoter-event__content {
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 24px var(--screen-padding) 60px;
 }
 
-.venue-event__title {
+.promoter-event__title {
   font-family: var(--font-heading);
   font-size: 28px;
   font-weight: 700;
@@ -31,14 +31,14 @@
   margin-top: 8px;
 }
 
-.venue-event__meta {
+.promoter-event__meta {
   font-size: 14px;
   color: var(--color-gray-600);
   margin-top: 4px;
 }
 
 /* ── Event code card ── */
-.venue-event__code-card {
+.promoter-event__code-card {
   background: var(--color-primary);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -47,7 +47,7 @@
   gap: 6px;
 }
 
-.venue-event__code-label {
+.promoter-event__code-label {
   font-family: var(--font-heading);
   font-size: 11px;
   font-weight: 700;
@@ -56,7 +56,7 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-.venue-event__code {
+.promoter-event__code {
   font-family: var(--font-heading);
   font-size: 48px;
   font-weight: 700;
@@ -65,14 +65,14 @@
   line-height: 1;
 }
 
-.venue-event__code-hint {
+.promoter-event__code-hint {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
   margin-top: 2px;
 }
 
-.venue-event__copy-btn {
+.promoter-event__copy-btn {
   align-self: flex-start;
   margin-top: 6px;
   font-size: 13px;
@@ -81,31 +81,31 @@
   color: #fff;
 }
 
-.venue-event__copy-btn:hover {
+.promoter-event__copy-btn:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.4);
   color: #fff;
 }
 
 /* ── Merch section ── */
-.venue-event__merch-header {
+.promoter-event__merch-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.venue-event__section-title {
+.promoter-event__section-title {
   font-family: var(--font-heading);
   font-size: 18px;
   font-weight: 700;
 }
 
-.venue-event__add-btn {
+.promoter-event__add-btn {
   font-size: 14px;
   padding: 10px 18px;
 }
 
-.venue-event__empty {
+.promoter-event__empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,14 +117,14 @@
 }
 
 /* ── Merch list ── */
-.venue-event__merch-list {
+.promoter-event__merch-list {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.venue-merch-card {
+.promoter-merch-card {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -133,7 +133,7 @@
   border-radius: var(--radius-md);
 }
 
-.venue-merch-card__img {
+.promoter-merch-card__img {
   width: 72px;
   height: 72px;
   object-fit: cover;
@@ -141,48 +141,48 @@
   flex-shrink: 0;
 }
 
-.venue-merch-card__img--empty {
+.promoter-merch-card__img--empty {
   background: var(--color-gray-100);
 }
 
-.venue-merch-card__info {
+.promoter-merch-card__info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.venue-merch-card__name {
+.promoter-merch-card__name {
   font-family: var(--font-heading);
   font-size: 15px;
   font-weight: 700;
 }
 
-.venue-merch-card__price {
+.promoter-merch-card__price {
   font-family: var(--font-heading);
   font-size: 14px;
   font-weight: 700;
   color: var(--color-accent);
 }
 
-.venue-merch-card__meta {
+.promoter-merch-card__meta {
   font-size: 12px;
   color: var(--color-gray-600);
 }
 
-.venue-merch-card__qty {
+.promoter-merch-card__qty {
   color: var(--color-gray-400);
 }
 
 /* ════════════════════════════════
    Tab switcher
 ════════════════════════════════ */
-.venue-event__tabs {
+.promoter-event__tabs {
   display: flex;
   border-bottom: 2px solid var(--color-gray-200);
   gap: 0;
 }
 
-.venue-event__tab {
+.promoter-event__tab {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -199,12 +199,12 @@
   transition: color 0.15s, border-color 0.15s;
 }
 
-.venue-event__tab--active {
+.promoter-event__tab--active {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
 }
 
-.venue-event__tab-badge {
+.promoter-event__tab-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -222,7 +222,7 @@
 /* ════════════════════════════════
    Orders — stats row
 ════════════════════════════════ */
-.venue-orders__stats {
+.promoter-orders__stats {
   display: flex;
   align-items: center;
   gap: 0;
@@ -231,7 +231,7 @@
   border-radius: var(--radius-md);
 }
 
-.venue-orders__stat {
+.promoter-orders__stat {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -239,28 +239,28 @@
   flex: 1;
 }
 
-.venue-orders__stat-divider {
+.promoter-orders__stat-divider {
   width: 1px;
   height: 32px;
   background: var(--color-gray-200);
 }
 
-.venue-orders__stat-val {
+.promoter-orders__stat-val {
   font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
 }
 
-.venue-orders__stat-val--pending {
+.promoter-orders__stat-val--pending {
   color: var(--color-accent);
 }
 
-.venue-orders__stat-val--done {
+.promoter-orders__stat-val--done {
   color: #34c770;
 }
 
-.venue-orders__stat-label {
+.promoter-orders__stat-label {
   font-size: 11px;
   font-weight: 600;
   color: var(--color-gray-400);
@@ -271,7 +271,7 @@
 /* ════════════════════════════════
    Orders — list
 ════════════════════════════════ */
-.venue-orders__list {
+.promoter-orders__list {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -279,7 +279,7 @@
 }
 
 /* ── Order card ── */
-.venue-order-card {
+.promoter-order-card {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -290,7 +290,7 @@
 }
 
 /* New orders that arrived via realtime pulse orange */
-.venue-order-card--new {
+.promoter-order-card--new {
   border-color: var(--color-accent);
   animation: order-pulse 1.2s ease-out forwards;
 }
@@ -302,18 +302,18 @@
 }
 
 /* Picked-up cards are visually quieter */
-.venue-order-card--done {
+.promoter-order-card--done {
   opacity: 0.55;
 }
 
-.venue-order-card__top {
+.promoter-order-card__top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
 
-.venue-order-card__code {
+.promoter-order-card__code {
   font-family: var(--font-heading);
   font-size: 13px;
   font-weight: 700;
@@ -321,14 +321,14 @@
   color: var(--color-primary);
 }
 
-.venue-order-card__time {
+.promoter-order-card__time {
   font-size: 12px;
   color: var(--color-gray-400);
   margin-top: 2px;
 }
 
 /* Status pill */
-.venue-order-card__status {
+.promoter-order-card__status {
   flex-shrink: 0;
   padding: 4px 10px;
   border-radius: 999px;
@@ -339,25 +339,25 @@
   text-transform: uppercase;
 }
 
-.venue-order-card__status--paid {
+.promoter-order-card__status--paid {
   background: rgba(255, 107, 0, 0.12);
   color: var(--color-accent);
 }
 
-.venue-order-card__status--done {
+.promoter-order-card__status--done {
   background: rgba(52, 199, 112, 0.12);
   color: #1a7a40;
 }
 
 /* Items list */
-.venue-order-card__items {
+.promoter-order-card__items {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.venue-order-card__item {
+.promoter-order-card__item {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -365,12 +365,12 @@
   color: var(--color-gray-800);
 }
 
-.venue-order-card__item-name {
+.promoter-order-card__item-name {
   flex: 1;
   font-weight: 600;
 }
 
-.venue-order-card__item-size {
+.promoter-order-card__item-size {
   font-size: 12px;
   color: var(--color-gray-400);
   background: var(--color-gray-100);
@@ -378,7 +378,7 @@
   border-radius: var(--radius-sm);
 }
 
-.venue-order-card__item-qty {
+.promoter-order-card__item-qty {
   font-family: var(--font-heading);
   font-size: 12px;
   font-weight: 700;
@@ -386,7 +386,7 @@
 }
 
 /* Footer: total + button */
-.venue-order-card__footer {
+.promoter-order-card__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -394,13 +394,13 @@
   border-top: 1px solid var(--color-gray-200);
 }
 
-.venue-order-card__total {
+.promoter-order-card__total {
   font-family: var(--font-heading);
   font-size: 16px;
   font-weight: 700;
 }
 
-.venue-order-card__pickup-btn {
+.promoter-order-card__pickup-btn {
   padding: 9px 16px;
   font-size: 13px;
 }

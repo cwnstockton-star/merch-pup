@@ -191,13 +191,13 @@ export default function CreateAccountScreen() {
             </p>
 
             <p className="create__signin">
-              Are you a venue?{' '}
+              Are you a promoter?{' '}
               <button
                 type="button"
                 className="text-link text-link--bold"
-                onClick={() => navigate('/venue/signup')}
+                onClick={() => navigate('/promoter/signup')}
               >
-                Create a venue account
+                Create a promoter account
               </button>
             </p>
           </div>

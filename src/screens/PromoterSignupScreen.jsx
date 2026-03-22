@@ -4,7 +4,7 @@ import Logo from '../components/Logo';
 import { useAuth } from '../context/AuthContext';
 import './CreateAccountScreen.css';
 
-export default function VenueSignupScreen() {
+export default function PromoterSignupScreen() {
   const navigate = useNavigate();
   const { signUp } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -21,13 +21,13 @@ export default function VenueSignupScreen() {
     setLoading(true);
     const { error } = await signUp(form.email, form.password, {
       name: form.name,
-      role: 'venue',
+      role: 'promoter',
     });
     setLoading(false);
     if (error) {
       setError(error.message);
     } else {
-      navigate('/venue/dashboard');
+      navigate('/promoter/dashboard');
     }
   }
 
@@ -55,12 +55,12 @@ export default function VenueSignupScreen() {
         </div>
 
         <p className="create__sub">
-          Create your venue account and start selling merch before the show.
+          Create your promoter account and start selling merch before the show.
         </p>
 
         <form className="create__form" onSubmit={handleSubmit} noValidate>
           <div className="input-group">
-            <label className="input-label" htmlFor="name">Venue / Organization Name</label>
+            <label className="input-label" htmlFor="name">Promoter / Organization Name</label>
             <input
               className="input-field"
               id="name"
@@ -112,7 +112,7 @@ export default function VenueSignupScreen() {
               className="btn btn-primary btn-lg btn-block create__cta"
               disabled={loading}
             >
-              {loading ? 'Creating account…' : 'Create Venue Account'}
+              {loading ? 'Creating account…' : 'Create Promoter Account'}
             </button>
 
             <p className="create__signin">

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
-import './VenueDashboardScreen.css';
+import './PromoterDashboardScreen.css';
 
-export default function VenueDashboardScreen() {
+export default function PromoterDashboardScreen() {
   const navigate = useNavigate();
   const { session, signOut } = useAuth();
   const [events, setEvents] = useState([]);
@@ -45,8 +45,8 @@ export default function VenueDashboardScreen() {
       const origin = window.location.origin;
       const { data, error } = await supabase.functions.invoke('create-connect-account', {
         body: {
-          returnUrl: `${origin}/venue/dashboard`,
-          refreshUrl: `${origin}/venue/dashboard`,
+          returnUrl: `${origin}/promoter/dashboard`,
+          refreshUrl: `${origin}/promoter/dashboard`,
         },
       });
       if (error || data?.error) throw new Error(error?.message || data.error);
@@ -69,30 +69,30 @@ export default function VenueDashboardScreen() {
   }
 
   return (
-    <div className="venue-dash screen">
-      <header className="venue-dash__header">
+    <div className="promoter-dash screen">
+      <header className="promoter-dash__header">
         <Logo size="sm" />
-        <button className="venue-dash__signout" onClick={handleSignOut}>Sign out</button>
+        <button className="promoter-dash__signout" onClick={handleSignOut}>Sign out</button>
       </header>
 
       {/* ── Stripe Connect banner ── */}
       {!loading && stripeStatus && (
         stripeStatus.chargesEnabled ? (
-          <div className="venue-dash__stripe-badge">
+          <div className="promoter-dash__stripe-badge">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <polyline points="20 6 9 17 4 12" />
             </svg>
             Stripe payments connected
           </div>
         ) : (
-          <div className="venue-dash__stripe-banner">
-            <div className="venue-dash__stripe-banner-text">
+          <div className="promoter-dash__stripe-banner">
+            <div className="promoter-dash__stripe-banner-text">
               <strong>Connect Stripe to accept payments.</strong>
               <span> Fans can't check out until your Stripe account is set up.</span>
             </div>
             {connectError && <p className="auth-error" style={{ marginTop: 6, marginBottom: 0 }}>{connectError}</p>}
             <button
-              className="btn btn-accent venue-dash__stripe-btn"
+              className="btn btn-accent promoter-dash__stripe-btn"
               onClick={handleConnectStripe}
               disabled={connectLoading}
             >
@@ -102,50 +102,50 @@ export default function VenueDashboardScreen() {
         )
       )}
 
-      <div className="venue-dash__top">
+      <div className="promoter-dash__top">
         <div>
-          <span className="badge">Venue Portal</span>
-          <h1 className="venue-dash__title">Your Events</h1>
+          <span className="badge">Promoter Portal</span>
+          <h1 className="promoter-dash__title">Your Events</h1>
         </div>
         <button
-          className="btn btn-primary venue-dash__create-btn"
-          onClick={() => navigate('/venue/events/new')}
+          className="btn btn-primary promoter-dash__create-btn"
+          onClick={() => navigate('/promoter/events/new')}
         >
           + Create
         </button>
       </div>
 
-      <div className="venue-dash__content">
+      <div className="promoter-dash__content">
         {loading ? (
-          <p className="venue-dash__state-msg">Loading your events…</p>
+          <p className="promoter-dash__state-msg">Loading your events…</p>
         ) : events.length === 0 ? (
-          <div className="venue-dash__empty">
-            <p className="venue-dash__state-msg">No events yet.</p>
-            <p className="venue-dash__state-sub">Create your first event to start selling merch.</p>
+          <div className="promoter-dash__empty">
+            <p className="promoter-dash__state-msg">No events yet.</p>
+            <p className="promoter-dash__state-sub">Create your first event to start selling merch.</p>
             <button
               className="btn btn-accent"
-              onClick={() => navigate('/venue/events/new')}
+              onClick={() => navigate('/promoter/events/new')}
             >
               Create Your First Event
             </button>
           </div>
         ) : (
-          <ul className="venue-dash__list">
+          <ul className="promoter-dash__list">
             {events.map((event) => (
-              <li key={event.id} className="venue-event-card">
-                <div className="venue-event-card__body">
-                  <h2 className="venue-event-card__name">{event.artist || event.name}</h2>
-                  <p className="venue-event-card__meta">
+              <li key={event.id} className="promoter-event-card">
+                <div className="promoter-event-card__body">
+                  <h2 className="promoter-event-card__name">{event.artist || event.name}</h2>
+                  <p className="promoter-event-card__meta">
                     {event.venue_name}{event.city ? ` · ${event.city}` : ''} · {formatDate(event.date)}
                   </p>
-                  <div className="venue-event-card__code-row">
-                    <span className="venue-event-card__code-label">Code</span>
-                    <span className="venue-event-card__code">{event.event_code}</span>
+                  <div className="promoter-event-card__code-row">
+                    <span className="promoter-event-card__code-label">Code</span>
+                    <span className="promoter-event-card__code">{event.event_code}</span>
                   </div>
                 </div>
                 <button
-                  className="venue-event-card__arrow"
-                  onClick={() => navigate(`/venue/events/${event.id}`)}
+                  className="promoter-event-card__arrow"
+                  onClick={() => navigate(`/promoter/events/${event.id}`)}
                   aria-label={`Manage ${event.artist || event.name}`}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

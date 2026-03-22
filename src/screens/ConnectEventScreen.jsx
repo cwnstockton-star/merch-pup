@@ -86,7 +86,7 @@ export default function ConnectEventScreen() {
         </div>
 
         <p className="connect__sub">
-          Your venue or artist will provide a code or QR link.
+          Your promoter or artist will provide a code or QR link.
         </p>
 
         <div className="connect__cards">

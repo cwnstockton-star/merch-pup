@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Identify the calling venue via their JWT
+    // Identify the calling promoter via their JWT
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) throw new Error('Missing authorization header');
 
@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
 
     const { returnUrl, refreshUrl } = await req.json();
 
-    // Check for an existing Stripe account on this venue's profile
+    // Check for an existing Stripe account on this promoter's profile
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('stripe_account_id')
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     let accountId: string = profile?.stripe_account_id;
 
     if (!accountId) {
-      // Create a new Stripe Express account for this venue
+      // Create a new Stripe Express account for this promoter
       const account = await stripe.accounts.create({
         type: 'express',
         metadata: { supabase_user_id: user.id },

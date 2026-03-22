@@ -3,13 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Logo from '../components/Logo';
 import './CreateAccountScreen.css';
-import './VenueCreateEventScreen.css';
-import './VenueAddMerchScreen.css';
+import './PromoterCreateEventScreen.css';
+import './PromoterAddMerchScreen.css';
 
 const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'One Size'];
 const CATEGORIES = ['Tops', 'Accessories', 'Art', 'Music', 'Other'];
 
-export default function VenueAddMerchScreen() {
+export default function PromoterAddMerchScreen() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -86,7 +86,7 @@ export default function VenueAddMerchScreen() {
       return;
     }
 
-    navigate(`/venue/events/${eventId}`);
+    navigate(`/promoter/events/${eventId}`);
   }
 
   return (
@@ -97,7 +97,7 @@ export default function VenueAddMerchScreen() {
       <div className="create__nav">
         <button
           className="create__back"
-          onClick={() => navigate(`/venue/events/${eventId}`)}
+          onClick={() => navigate(`/promoter/events/${eventId}`)}
           aria-label="Go back"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -120,7 +120,7 @@ export default function VenueAddMerchScreen() {
           Fans will see this when they browse merch for your event.
         </p>
 
-        <form className="venue-form" onSubmit={handleSubmit} noValidate>
+        <form className="promoter-form" onSubmit={handleSubmit} noValidate>
 
           {/* Photo */}
           <div className="input-group">
@@ -148,8 +148,8 @@ export default function VenueAddMerchScreen() {
             />
           </div>
 
-          <div className="venue-form__section">
-            <h2 className="venue-form__section-title">Item Details</h2>
+          <div className="promoter-form__section">
+            <h2 className="promoter-form__section-title">Item Details</h2>
 
             <div className="input-group">
               <label className="input-label" htmlFor="name">Item Name</label>
@@ -173,8 +173,8 @@ export default function VenueAddMerchScreen() {
             </div>
           </div>
 
-          <div className="venue-form__section">
-            <h2 className="venue-form__section-title">Pricing & Stock</h2>
+          <div className="promoter-form__section">
+            <h2 className="promoter-form__section-title">Pricing & Stock</h2>
 
             <div className="input-group">
               <label className="input-label" htmlFor="price">Price ($)</label>

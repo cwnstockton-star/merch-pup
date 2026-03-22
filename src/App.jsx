@@ -15,11 +15,11 @@ import OrderConfirmationScreen from './screens/OrderConfirmationScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import MyEventsScreen from './screens/MyEventsScreen';
 import OrderHistoryScreen from './screens/OrderHistoryScreen';
-import VenueDashboardScreen from './screens/VenueDashboardScreen';
-import VenueSignupScreen from './screens/VenueSignupScreen';
-import VenueCreateEventScreen from './screens/VenueCreateEventScreen';
-import VenueEventScreen from './screens/VenueEventScreen';
-import VenueAddMerchScreen from './screens/VenueAddMerchScreen';
+import PromoterDashboardScreen from './screens/PromoterDashboardScreen';
+import PromoterSignupScreen from './screens/PromoterSignupScreen';
+import PromoterCreateEventScreen from './screens/PromoterCreateEventScreen';
+import PromoterEventScreen from './screens/PromoterEventScreen';
+import PromoterAddMerchScreen from './screens/PromoterAddMerchScreen';
 
 // Redirects unauthenticated users to /login.
 // If requiredRole is set, also checks that the user's role matches.
@@ -39,8 +39,8 @@ function ProtectedRoute({ requiredRole, children }) {
   }
 
   if (requiredRole && profile?.role !== requiredRole) {
-    // Send venue users to their dashboard, fans to the home feed
-    return <Navigate to={profile?.role === 'venue' ? '/venue/dashboard' : '/home'} replace />;
+    // Send promoter users to their dashboard, fans to the home feed
+    return <Navigate to={profile?.role === 'promoter' ? '/promoter/dashboard' : '/home'} replace />;
   }
 
   return children;
@@ -67,14 +67,14 @@ function AppRoutes() {
       <Route path="/profile" element={<ProtectedRoute requiredRole="fan"><ProfileScreen /></ProtectedRoute>} />
       <Route path="/order-history" element={<ProtectedRoute requiredRole="fan"><OrderHistoryScreen /></ProtectedRoute>} />
 
-      {/* Venue signup — public */}
-      <Route path="/venue/signup" element={<VenueSignupScreen />} />
+      {/* Promoter signup — public */}
+      <Route path="/promoter/signup" element={<PromoterSignupScreen />} />
 
-      {/* Venue-only */}
-      <Route path="/venue/dashboard" element={<ProtectedRoute requiredRole="venue"><VenueDashboardScreen /></ProtectedRoute>} />
-      <Route path="/venue/events/new" element={<ProtectedRoute requiredRole="venue"><VenueCreateEventScreen /></ProtectedRoute>} />
-      <Route path="/venue/events/:eventId" element={<ProtectedRoute requiredRole="venue"><VenueEventScreen /></ProtectedRoute>} />
-      <Route path="/venue/events/:eventId/merch/new" element={<ProtectedRoute requiredRole="venue"><VenueAddMerchScreen /></ProtectedRoute>} />
+      {/* Promoter-only */}
+      <Route path="/promoter/dashboard" element={<ProtectedRoute requiredRole="promoter"><PromoterDashboardScreen /></ProtectedRoute>} />
+      <Route path="/promoter/events/new" element={<ProtectedRoute requiredRole="promoter"><PromoterCreateEventScreen /></ProtectedRoute>} />
+      <Route path="/promoter/events/:eventId" element={<ProtectedRoute requiredRole="promoter"><PromoterEventScreen /></ProtectedRoute>} />
+      <Route path="/promoter/events/:eventId/merch/new" element={<ProtectedRoute requiredRole="promoter"><PromoterAddMerchScreen /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

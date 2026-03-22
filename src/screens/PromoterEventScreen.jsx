@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Logo from '../components/Logo';
 import './CreateAccountScreen.css';
-import './VenueEventScreen.css';
+import './PromoterEventScreen.css';
 
-export default function VenueEventScreen() {
+export default function PromoterEventScreen() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
@@ -38,7 +38,7 @@ export default function VenueEventScreen() {
   // Real-time order feed
   useEffect(() => {
     const channel = supabase
-      .channel(`venue-orders-${eventId}`)
+      .channel(`promoter-orders-${eventId}`)
       .on(
         'postgres_changes',
         {
@@ -133,11 +133,11 @@ export default function VenueEventScreen() {
   }
 
   return (
-    <div className="venue-event screen">
-      <header className="venue-event__header">
+    <div className="promoter-event screen">
+      <header className="promoter-event__header">
         <button
           className="create__back"
-          onClick={() => navigate('/venue/dashboard')}
+          onClick={() => navigate('/promoter/dashboard')}
           aria-label="Back to dashboard"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -148,13 +148,13 @@ export default function VenueEventScreen() {
         <div style={{ width: 36 }} />
       </header>
 
-      <div className="venue-event__content">
+      <div className="promoter-event__content">
 
         {/* ── Title ── */}
         <div>
           <span className="badge">Event</span>
-          <h1 className="venue-event__title">{event.artist || event.name}</h1>
-          <p className="venue-event__meta">
+          <h1 className="promoter-event__title">{event.artist || event.name}</h1>
+          <p className="promoter-event__meta">
             {event.venue_name}
             {event.city ? ` · ${event.city}` : ''}
             {event.date ? ` · ${formatDate(event.date)}` : ''}
@@ -162,21 +162,21 @@ export default function VenueEventScreen() {
         </div>
 
         {/* ── Event code card ── */}
-        <div className="venue-event__code-card">
-          <p className="venue-event__code-label">Fan Event Code</p>
-          <p className="venue-event__code">{event.event_code}</p>
-          <p className="venue-event__code-hint">
+        <div className="promoter-event__code-card">
+          <p className="promoter-event__code-label">Fan Event Code</p>
+          <p className="promoter-event__code">{event.event_code}</p>
+          <p className="promoter-event__code-hint">
             Share this with fans so they can connect to your event and browse merch.
           </p>
-          <button className="btn btn-outline venue-event__copy-btn" onClick={copyCode}>
+          <button className="btn btn-outline promoter-event__copy-btn" onClick={copyCode}>
             {codeCopied ? 'Copied!' : 'Copy Code'}
           </button>
         </div>
 
         {/* ── Tab switcher ── */}
-        <div className="venue-event__tabs" role="tablist">
+        <div className="promoter-event__tabs" role="tablist">
           <button
-            className={`venue-event__tab ${tab === 'merch' ? 'venue-event__tab--active' : ''}`}
+            className={`promoter-event__tab ${tab === 'merch' ? 'promoter-event__tab--active' : ''}`}
             role="tab"
             aria-selected={tab === 'merch'}
             onClick={() => setTab('merch')}
@@ -184,14 +184,14 @@ export default function VenueEventScreen() {
             Merch ({merch.length})
           </button>
           <button
-            className={`venue-event__tab ${tab === 'orders' ? 'venue-event__tab--active' : ''}`}
+            className={`promoter-event__tab ${tab === 'orders' ? 'promoter-event__tab--active' : ''}`}
             role="tab"
             aria-selected={tab === 'orders'}
             onClick={() => setTab('orders')}
           >
             Orders
             {pending > 0 && (
-              <span className="venue-event__tab-badge" aria-label={`${pending} pending`}>
+              <span className="promoter-event__tab-badge" aria-label={`${pending} pending`}>
                 {pending}
               </span>
             )}
@@ -203,37 +203,37 @@ export default function VenueEventScreen() {
         ════════════════════════════════ */}
         {tab === 'merch' && (
           <>
-            <div className="venue-event__merch-header">
-              <h2 className="venue-event__section-title">Merch</h2>
+            <div className="promoter-event__merch-header">
+              <h2 className="promoter-event__section-title">Merch</h2>
               <button
-                className="btn btn-primary venue-event__add-btn"
-                onClick={() => navigate(`/venue/events/${eventId}/merch/new`)}
+                className="btn btn-primary promoter-event__add-btn"
+                onClick={() => navigate(`/promoter/events/${eventId}/merch/new`)}
               >
                 + Add Item
               </button>
             </div>
 
             {merch.length === 0 ? (
-              <div className="venue-event__empty">
+              <div className="promoter-event__empty">
                 <p>No merch items yet.</p>
                 <p>Add your first item to start selling.</p>
               </div>
             ) : (
-              <ul className="venue-event__merch-list">
+              <ul className="promoter-event__merch-list">
                 {merch.map((item) => (
-                  <li key={item.id} className="venue-merch-card">
+                  <li key={item.id} className="promoter-merch-card">
                     {item.image_url ? (
-                      <img src={item.image_url} alt={item.name} className="venue-merch-card__img" />
+                      <img src={item.image_url} alt={item.name} className="promoter-merch-card__img" />
                     ) : (
-                      <div className="venue-merch-card__img venue-merch-card__img--empty" />
+                      <div className="promoter-merch-card__img promoter-merch-card__img--empty" />
                     )}
-                    <div className="venue-merch-card__info">
-                      <h3 className="venue-merch-card__name">{item.name}</h3>
-                      <p className="venue-merch-card__price">${parseFloat(item.price).toFixed(2)}</p>
+                    <div className="promoter-merch-card__info">
+                      <h3 className="promoter-merch-card__name">{item.name}</h3>
+                      <p className="promoter-merch-card__price">${parseFloat(item.price).toFixed(2)}</p>
                       {item.sizes?.length > 0 && (
-                        <p className="venue-merch-card__meta">{item.sizes.join(' · ')}</p>
+                        <p className="promoter-merch-card__meta">{item.sizes.join(' · ')}</p>
                       )}
-                      <p className="venue-merch-card__meta venue-merch-card__qty">
+                      <p className="promoter-merch-card__meta promoter-merch-card__qty">
                         Qty: {item.quantity_available}
                       </p>
                     </div>
@@ -250,74 +250,74 @@ export default function VenueEventScreen() {
         {tab === 'orders' && (
           <>
             {/* Stats row */}
-            <div className="venue-orders__stats">
-              <div className="venue-orders__stat">
-                <span className="venue-orders__stat-val">{totalOrders}</span>
-                <span className="venue-orders__stat-label">Orders</span>
+            <div className="promoter-orders__stats">
+              <div className="promoter-orders__stat">
+                <span className="promoter-orders__stat-val">{totalOrders}</span>
+                <span className="promoter-orders__stat-label">Orders</span>
               </div>
-              <div className="venue-orders__stat-divider" />
-              <div className="venue-orders__stat">
-                <span className="venue-orders__stat-val venue-orders__stat-val--pending">{pending}</span>
-                <span className="venue-orders__stat-label">Pending</span>
+              <div className="promoter-orders__stat-divider" />
+              <div className="promoter-orders__stat">
+                <span className="promoter-orders__stat-val promoter-orders__stat-val--pending">{pending}</span>
+                <span className="promoter-orders__stat-label">Pending</span>
               </div>
-              <div className="venue-orders__stat-divider" />
-              <div className="venue-orders__stat">
-                <span className="venue-orders__stat-val venue-orders__stat-val--done">{pickedUp}</span>
-                <span className="venue-orders__stat-label">Picked Up</span>
+              <div className="promoter-orders__stat-divider" />
+              <div className="promoter-orders__stat">
+                <span className="promoter-orders__stat-val promoter-orders__stat-val--done">{pickedUp}</span>
+                <span className="promoter-orders__stat-label">Picked Up</span>
               </div>
-              <div className="venue-orders__stat-divider" />
-              <div className="venue-orders__stat">
-                <span className="venue-orders__stat-val">${revenue.toFixed(2)}</span>
-                <span className="venue-orders__stat-label">Revenue</span>
+              <div className="promoter-orders__stat-divider" />
+              <div className="promoter-orders__stat">
+                <span className="promoter-orders__stat-val">${revenue.toFixed(2)}</span>
+                <span className="promoter-orders__stat-label">Revenue</span>
               </div>
             </div>
 
             {orders.length === 0 ? (
-              <div className="venue-event__empty">
+              <div className="promoter-event__empty">
                 <p>No orders yet.</p>
                 <p>New orders will appear here in real time.</p>
               </div>
             ) : (
-              <ul className="venue-orders__list">
+              <ul className="promoter-orders__list">
                 {orders.map((order) => {
                   const isNew = newOrderIds.current.has(order.id);
                   const isPaid = order.status === 'paid';
                   return (
                     <li
                       key={order.id}
-                      className={`venue-order-card ${isNew ? 'venue-order-card--new' : ''} ${!isPaid ? 'venue-order-card--done' : ''}`}
+                      className={`promoter-order-card ${isNew ? 'promoter-order-card--new' : ''} ${!isPaid ? 'promoter-order-card--done' : ''}`}
                     >
-                      <div className="venue-order-card__top">
+                      <div className="promoter-order-card__top">
                         {/* Code + time */}
                         <div>
-                          <p className="venue-order-card__code">{order.qr_code}</p>
-                          <p className="venue-order-card__time">{formatTime(order.created_at)}</p>
+                          <p className="promoter-order-card__code">{order.qr_code}</p>
+                          <p className="promoter-order-card__time">{formatTime(order.created_at)}</p>
                         </div>
                         {/* Status badge */}
-                        <span className={`venue-order-card__status ${isPaid ? 'venue-order-card__status--paid' : 'venue-order-card__status--done'}`}>
+                        <span className={`promoter-order-card__status ${isPaid ? 'promoter-order-card__status--paid' : 'promoter-order-card__status--done'}`}>
                           {isPaid ? 'Ready' : 'Picked Up'}
                         </span>
                       </div>
 
                       {/* Items */}
-                      <ul className="venue-order-card__items">
+                      <ul className="promoter-order-card__items">
                         {order.order_items?.map((item) => (
-                          <li key={item.id} className="venue-order-card__item">
-                            <span className="venue-order-card__item-name">{item.name}</span>
+                          <li key={item.id} className="promoter-order-card__item">
+                            <span className="promoter-order-card__item-name">{item.name}</span>
                             {item.size && item.size !== 'One Size' && (
-                              <span className="venue-order-card__item-size">{item.size}</span>
+                              <span className="promoter-order-card__item-size">{item.size}</span>
                             )}
-                            <span className="venue-order-card__item-qty">×{item.quantity}</span>
+                            <span className="promoter-order-card__item-qty">×{item.quantity}</span>
                           </li>
                         ))}
                       </ul>
 
                       {/* Total + action */}
-                      <div className="venue-order-card__footer">
-                        <span className="venue-order-card__total">${parseFloat(order.total).toFixed(2)}</span>
+                      <div className="promoter-order-card__footer">
+                        <span className="promoter-order-card__total">${parseFloat(order.total).toFixed(2)}</span>
                         {isPaid && (
                           <button
-                            className="btn btn-accent venue-order-card__pickup-btn"
+                            className="btn btn-accent promoter-order-card__pickup-btn"
                             onClick={() => markPickedUp(order.id)}
                           >
                             Mark Picked Up

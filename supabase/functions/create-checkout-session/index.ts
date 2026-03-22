@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
       };
     });
 
-    // Resolve the venue's connected Stripe account via the event's owner
+    // Resolve the promoter's connected Stripe account via the event's owner
     let stripeAccountId: string | null = null;
     if (eventId) {
       const { data: event } = await supabase
@@ -60,18 +60,18 @@ Deno.serve(async (req) => {
         .single();
 
       if (event?.owner_id) {
-        const { data: venueProfile } = await supabase
+        const { data: promoterProfile } = await supabase
           .from('profiles')
           .select('stripe_account_id')
           .eq('id', event.owner_id)
           .single();
 
-        stripeAccountId = venueProfile?.stripe_account_id ?? null;
+        stripeAccountId = promoterProfile?.stripe_account_id ?? null;
       }
     }
 
     if (!stripeAccountId) {
-      throw new Error('This venue has not connected a Stripe account yet. Contact the venue directly.');
+      throw new Error('This promoter has not connected a Stripe account yet. Contact the promoter directly.');
     }
 
     // 5% application fee (in cents) — stays with Merch Pup platform account

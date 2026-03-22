@@ -5,9 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import { generateEventCode } from '../lib/utils';
 import Logo from '../components/Logo';
 import './CreateAccountScreen.css';
-import './VenueCreateEventScreen.css';
+import './PromoterCreateEventScreen.css';
 
-export default function VenueCreateEventScreen() {
+export default function PromoterCreateEventScreen() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const [form, setForm] = useState({
@@ -58,7 +58,7 @@ export default function VenueCreateEventScreen() {
       return;
     }
 
-    navigate(`/venue/events/${event.id}`);
+    navigate(`/promoter/events/${event.id}`);
   }
 
   return (
@@ -69,7 +69,7 @@ export default function VenueCreateEventScreen() {
       <div className="create__nav">
         <button
           className="create__back"
-          onClick={() => navigate('/venue/dashboard')}
+          onClick={() => navigate('/promoter/dashboard')}
           aria-label="Back to dashboard"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -92,10 +92,10 @@ export default function VenueCreateEventScreen() {
           Fill in the details. Fans will see all of this when they connect.
         </p>
 
-        <form className="venue-form" onSubmit={handleSubmit} noValidate>
+        <form className="promoter-form" onSubmit={handleSubmit} noValidate>
 
-          <div className="venue-form__section">
-            <h2 className="venue-form__section-title">The Show</h2>
+          <div className="promoter-form__section">
+            <h2 className="promoter-form__section-title">The Show</h2>
 
             <div className="input-group">
               <label className="input-label" htmlFor="artist">Artist / Act Name</label>
@@ -104,7 +104,7 @@ export default function VenueCreateEventScreen() {
             </div>
 
             <div className="input-group">
-              <label className="input-label" htmlFor="name">Event Subtitle <span className="venue-form__optional">(optional)</span></label>
+              <label className="input-label" htmlFor="name">Event Subtitle <span className="promoter-form__optional">(optional)</span></label>
               <input className="input-field" id="name" name="name" type="text"
                 placeholder="Monsters Tour 2026" value={form.name} onChange={handleChange} />
             </div>
@@ -116,8 +116,8 @@ export default function VenueCreateEventScreen() {
             </div>
           </div>
 
-          <div className="venue-form__section">
-            <h2 className="venue-form__section-title">Location</h2>
+          <div className="promoter-form__section">
+            <h2 className="promoter-form__section-title">Location</h2>
 
             <div className="input-group">
               <label className="input-label" htmlFor="venueName">Venue Name</label>
@@ -138,8 +138,8 @@ export default function VenueCreateEventScreen() {
             </div>
           </div>
 
-          <div className="venue-form__section">
-            <h2 className="venue-form__section-title">Fan Experience</h2>
+          <div className="promoter-form__section">
+            <h2 className="promoter-form__section-title">Fan Experience</h2>
 
             <div className="input-group">
               <label className="input-label" htmlFor="description">Event Description</label>
@@ -156,7 +156,7 @@ export default function VenueCreateEventScreen() {
 
             <div className="input-group">
               <label className="input-label" htmlFor="directions">Pickup Directions</label>
-              <p className="venue-form__hint">One step per line — fans see these as a numbered list.</p>
+              <p className="promoter-form__hint">One step per line — fans see these as a numbered list.</p>
               <textarea className="input-field input-textarea" id="directions" name="directions"
                 placeholder={"Enter through the main entrance.\nFollow signs to the merch table.\nShow your QR code."}
                 rows={4} value={form.directions} onChange={handleChange} />
