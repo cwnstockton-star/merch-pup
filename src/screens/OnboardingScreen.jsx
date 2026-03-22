@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MascotPlaceholder from '../components/MascotPlaceholder';
-import cowboyInline from '../assets/cowboyinline.png';
+import cowboyInline from '../assets/cowboyinlinecompress.webp';
 import './OnboardingScreen.css';
 
 const SLIDES = [
