@@ -243,8 +243,8 @@ export default function HomeFeedScreen() {
         {!loading && connectedEvents.length === 0 && (
           <section className="home__section">
             <h2 className="home__section-title">Your Connected Shows</h2>
-            <div style={{ padding: '20px 0' }}>
-              <p style={{ fontSize: 14, color: 'var(--color-gray-600)', marginBottom: 12 }}>
+            <div style={{ padding: '24px', textAlign: 'center' }}>
+              <p style={{ fontSize: 14, color: 'var(--color-gray-600)', marginBottom: 20 }}>
                 No shows connected yet. Enter your event code to get started.
               </p>
               <button

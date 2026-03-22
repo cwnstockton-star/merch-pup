@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MascotPlaceholder from '../components/MascotPlaceholder';
+import cowboyInline from '../assets/cowboyinline.png';
 import './OnboardingScreen.css';
 
 const SLIDES = [
@@ -44,7 +45,15 @@ export default function OnboardingScreen() {
       <div className="onboard__slide" key={current}>
         {/* Upper zone — mascot centered as focal point */}
         <div className="onboard__mascot-zone">
-          <MascotPlaceholder size="lg" label={slide.mascotLabel} />
+          {current === 0 ? (
+            <img
+              src={cowboyInline}
+              alt="Merch Pup cowboy mascot"
+              style={{ width: '100%', height: 280, objectFit: 'contain', display: 'block', margin: '0 auto' }}
+            />
+          ) : (
+            <MascotPlaceholder size="lg" label={slide.mascotLabel} />
+          )}
         </div>
 
         {/* Lower zone — headline + subtext pinned to bottom of slide */}
