@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MascotPlaceholder from '../components/MascotPlaceholder';
-import cowboyInline from '../assets/cowboyinlinecompress.webp';
+import cowboyInline from '../assets/cowboyinlinebigg.webp';
 import './OnboardingScreen.css';
 
 const SLIDES = [
@@ -49,7 +49,7 @@ export default function OnboardingScreen() {
             <img
               src={cowboyInline}
               alt="Merch Pup cowboy mascot"
-              style={{ width: '100%', height: 280, objectFit: 'contain', display: 'block', margin: '0 auto' }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
             />
           ) : (
             <MascotPlaceholder size="lg" label={slide.mascotLabel} />

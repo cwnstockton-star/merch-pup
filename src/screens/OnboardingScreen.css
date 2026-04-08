@@ -35,13 +35,15 @@
   }
 }
 
-/* ── Upper zone — mascot centered as focal point ── */
+/* ── Upper zone — mascot anchored to top, takes ~60% of screen ── */
 .onboard__mascot-zone {
-  flex: 1;
+  height: 60svh;
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px var(--screen-padding) 16px;
+  padding: 0 var(--screen-padding) 8px;
+  overflow: hidden;
 }
 
 /* ── Lower zone — text pinned to bottom of slide area ── */
