@@ -20,18 +20,23 @@ export default function CreateAccountScreen() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { error, needsConfirmation } = await signUp(form.email, form.password, {
-      name: form.name,
-      phone: form.phone,
-      role: 'fan',
-    });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else if (needsConfirmation) {
-      setConfirmed(true); // show "check your email" message
-    } else {
-      navigate('/connect-event');
+    try {
+      const { error, needsConfirmation } = await signUp(form.email, form.password, {
+        name: form.name,
+        phone: form.phone,
+        role: 'fan',
+      });
+      if (error) {
+        setError(error.message);
+      } else if (needsConfirmation) {
+        setConfirmed(true); // show "check your email" message
+      } else {
+        navigate('/connect-event');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 

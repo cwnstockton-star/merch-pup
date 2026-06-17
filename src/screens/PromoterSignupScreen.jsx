@@ -10,6 +10,7 @@ export default function PromoterSignupScreen() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -19,16 +20,55 @@ export default function PromoterSignupScreen() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { error } = await signUp(form.email, form.password, {
-      name: form.name,
-      role: 'promoter',
-    });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
-      navigate('/promoter/dashboard');
+    try {
+      const { error, needsConfirmation } = await signUp(form.email, form.password, {
+        name: form.name,
+        role: 'promoter',
+      });
+      if (error) {
+        setError(error.message);
+      } else if (needsConfirmation) {
+        setConfirmed(true);
+      } else {
+        navigate('/promoter/dashboard');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  }
+
+  if (confirmed) {
+    return (
+      <div className="create screen">
+        <div className="splash__grain" aria-hidden="true" />
+        <div className="splash__top-bar" />
+        <div className="create__nav">
+          <div style={{ width: 32 }} />
+          <Logo size="sm" />
+          <div style={{ width: 32 }} />
+        </div>
+        <div className="create__content" style={{ textAlign: 'center', alignItems: 'center' }}>
+          <div className="create__heading-wrap">
+            <div className="create__heading-highlight" aria-hidden="true" />
+            <h1 className="create__heading">Check your<br />email.</h1>
+          </div>
+          <p className="create__sub" style={{ marginTop: 16 }}>
+            We sent a confirmation link to <strong>{form.email}</strong>.
+            Click it to activate your account, then sign in.
+          </p>
+          <div className="create__actions" style={{ marginTop: 32 }}>
+            <button
+              className="btn btn-primary btn-lg btn-block create__cta"
+              onClick={() => navigate('/login')}
+            >
+              Go to Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

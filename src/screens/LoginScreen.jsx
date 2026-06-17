@@ -19,14 +19,19 @@ export default function LoginScreen() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { error } = await signIn(form.email, form.password);
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
-      // AuthContext will have fetched the profile; ProtectedRoute will redirect
-      // venue users to /venue/dashboard automatically from /home
-      navigate('/home');
+    try {
+      const { error } = await signIn(form.email, form.password);
+      if (error) {
+        setError(error.message);
+      } else {
+        // AuthContext will have fetched the profile; ProtectedRoute will redirect
+        // venue users to /venue/dashboard automatically from /home
+        navigate('/home');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 
