@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MascotPlaceholder from '../components/MascotPlaceholder';
 import cowboyInline from '../assets/cowboyinlinebigg.webp';
 import orderNowPaw from '../assets/merchpupordernowpaw.webp';
+import hiphopPaw from '../assets/merchpuphiphop1_trans2.webp';
 import './OnboardingScreen.css';
 
 const SLIDES = [
@@ -59,7 +59,11 @@ export default function OnboardingScreen() {
               style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
             />
           ) : (
-            <MascotPlaceholder size="lg" label={slide.mascotLabel} />
+            <img
+              src={hiphopPaw}
+              alt="Merch Pup hip hop mascot"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+            />
           )}
         </div>
 
