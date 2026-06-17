@@ -72,9 +72,13 @@
   margin-top: 2px;
 }
 
-.promoter-event__copy-btn {
-  align-self: flex-start;
+.promoter-event__code-actions {
+  display: flex;
+  gap: 8px;
   margin-top: 6px;
+}
+
+.promoter-event__copy-btn {
   font-size: 13px;
   padding: 10px 20px;
   border-color: rgba(255, 255, 255, 0.25);
@@ -400,7 +404,66 @@
   font-weight: 700;
 }
 
+.promoter-order-card__fan {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  margin-top: 4px;
+}
+
+.promoter-order-card__phone {
+  display: block;
+  font-size: 12px;
+  color: var(--color-gray-400);
+  text-decoration: none;
+  margin-top: 1px;
+}
+
+.promoter-order-card__phone:hover {
+  color: var(--color-primary);
+}
+
+.promoter-order-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .promoter-order-card__pickup-btn {
   padding: 9px 16px;
   font-size: 13px;
+}
+
+.promoter-order-card__sms-btn {
+  padding: 9px 14px;
+  font-size: 13px;
+  border: 2px solid var(--color-gray-200);
+  color: var(--color-gray-800);
+  background: transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.promoter-order-card__sms-btn:hover:not(:disabled) {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-400);
+}
+
+.promoter-order-card__sms-btn:disabled {
+  cursor: default;
+}
+
+.promoter-order-card__sms-btn--sent {
+  border-color: #34c770;
+  color: #1a7a40;
+  background: rgba(52, 199, 112, 0.08);
+}
+
+.promoter-order-card__sms-btn--error {
+  border-color: #e53e3e;
+  color: #9b1c1c;
+  background: rgba(229, 62, 62, 0.08);
 }

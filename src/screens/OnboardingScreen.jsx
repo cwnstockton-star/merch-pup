@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MascotPlaceholder from '../components/MascotPlaceholder';
 import cowboyInline from '../assets/cowboyinlinebigg.webp';
+import orderNowPaw from '../assets/merchpupordernowpaw.webp';
 import './OnboardingScreen.css';
 
 const SLIDES = [
@@ -49,6 +50,12 @@ export default function OnboardingScreen() {
             <img
               src={cowboyInline}
               alt="Merch Pup cowboy mascot"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+            />
+          ) : current === 1 ? (
+            <img
+              src={orderNowPaw}
+              alt="Merch Pup order now mascot"
               style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
             />
           ) : (

@@ -14,7 +14,8 @@ export default function PromoterEventScreen() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('merch'); // 'merch' | 'orders'
   const [codeCopied, setCodeCopied] = useState(false);
-  const newOrderIds = useRef(new Set()); // track IDs that arrived via realtime
+  const [smsState, setSmsState] = useState({}); // { [orderId]: 'sending' | 'sent' | 'error' }
+  const newOrderIds = useRef(new Set());
 
   useEffect(() => {
     async function loadData() {
@@ -23,7 +24,7 @@ export default function PromoterEventScreen() {
         supabase.from('merch_items').select('*').eq('event_id', eventId).order('created_at'),
         supabase
           .from('orders')
-          .select('*, order_items(*)')
+          .select('*, order_items(*), fan:profiles!fan_id(name, phone)')
           .eq('event_id', eventId)
           .order('created_at', { ascending: false }),
       ]);
@@ -41,17 +42,11 @@ export default function PromoterEventScreen() {
       .channel(`promoter-orders-${eventId}`)
       .on(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'orders',
-          filter: `event_id=eq.${eventId}`,
-        },
+        { event: 'INSERT', schema: 'public', table: 'orders', filter: `event_id=eq.${eventId}` },
         async (payload) => {
-          // Fetch full order with items (payload.new won't have order_items)
           const { data } = await supabase
             .from('orders')
-            .select('*, order_items(*)')
+            .select('*, order_items(*), fan:profiles!fan_id(name, phone)')
             .eq('id', payload.new.id)
             .single();
           if (data) {
@@ -62,17 +57,28 @@ export default function PromoterEventScreen() {
       )
       .on(
         'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'orders',
-          filter: `event_id=eq.${eventId}`,
-        },
+        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `event_id=eq.${eventId}` },
         (payload) => {
           setOrders((prev) =>
-            prev.map((o) =>
-              o.id === payload.new.id ? { ...o, status: payload.new.status } : o
-            )
+            prev.map((o) => o.id === payload.new.id ? { ...o, status: payload.new.status } : o)
+          );
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [eventId]);
+
+  // Real-time merch inventory — picks up quantity_available changes from any source
+  useEffect(() => {
+    const channel = supabase
+      .channel(`promoter-merch-${eventId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'merch_items', filter: `event_id=eq.${eventId}` },
+        (payload) => {
+          setMerch((prev) =>
+            prev.map((m) => m.id === payload.new.id ? { ...m, ...payload.new } : m)
           );
         }
       )
@@ -82,20 +88,36 @@ export default function PromoterEventScreen() {
   }, [eventId]);
 
   async function markPickedUp(orderId) {
-    // Optimistic update
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status: 'picked_up' } : o))
     );
-    await supabase
-      .from('orders')
-      .update({ status: 'picked_up' })
-      .eq('id', orderId);
+    await supabase.from('orders').update({ status: 'picked_up' }).eq('id', orderId);
+  }
+
+  async function notifyFan(orderId) {
+    setSmsState((prev) => ({ ...prev, [orderId]: 'sending' }));
+    const { error } = await supabase.functions.invoke('notify-fan-ready', {
+      body: { orderId },
+    });
+    setSmsState((prev) => ({ ...prev, [orderId]: error ? 'error' : 'sent' }));
+    if (!error) {
+      setTimeout(() => setSmsState((prev) => ({ ...prev, [orderId]: undefined })), 3000);
+    }
   }
 
   function copyCode() {
     navigator.clipboard.writeText(event.event_code);
     setCodeCopied(true);
     setTimeout(() => setCodeCopied(false), 2000);
+  }
+
+  function shareCode() {
+    const text = `Join ${event.artist || event.name}'s merch pre-order on Merch PUP!\n\nEvent code: ${event.event_code}`;
+    if (navigator.share) {
+      navigator.share({ title: 'Merch PUP Event Code', text });
+    } else {
+      copyCode();
+    }
   }
 
   function formatDate(dateStr) {
@@ -168,9 +190,14 @@ export default function PromoterEventScreen() {
           <p className="promoter-event__code-hint">
             Share this with fans so they can connect to your event and browse merch.
           </p>
-          <button className="btn btn-outline promoter-event__copy-btn" onClick={copyCode}>
-            {codeCopied ? 'Copied!' : 'Copy Code'}
-          </button>
+          <div className="promoter-event__code-actions">
+            <button className="btn btn-outline promoter-event__copy-btn" onClick={copyCode}>
+              {codeCopied ? 'Copied!' : 'Copy Code'}
+            </button>
+            <button className="btn btn-outline promoter-event__copy-btn" onClick={shareCode}>
+              Share
+            </button>
+          </div>
         </div>
 
         {/* ── Tab switcher ── */}
@@ -288,12 +315,21 @@ export default function PromoterEventScreen() {
                       className={`promoter-order-card ${isNew ? 'promoter-order-card--new' : ''} ${!isPaid ? 'promoter-order-card--done' : ''}`}
                     >
                       <div className="promoter-order-card__top">
-                        {/* Code + time */}
                         <div>
                           <p className="promoter-order-card__code">{order.qr_code}</p>
                           <p className="promoter-order-card__time">{formatTime(order.created_at)}</p>
+                          {order.fan?.name && (
+                            <p className="promoter-order-card__fan">{order.fan.name}</p>
+                          )}
+                          {order.fan?.phone && (
+                            <a
+                              className="promoter-order-card__phone"
+                              href={`tel:${order.fan.phone}`}
+                            >
+                              {order.fan.phone}
+                            </a>
+                          )}
                         </div>
-                        {/* Status badge */}
                         <span className={`promoter-order-card__status ${isPaid ? 'promoter-order-card__status--paid' : 'promoter-order-card__status--done'}`}>
                           {isPaid ? 'Ready' : 'Picked Up'}
                         </span>
@@ -312,16 +348,29 @@ export default function PromoterEventScreen() {
                         ))}
                       </ul>
 
-                      {/* Total + action */}
                       <div className="promoter-order-card__footer">
                         <span className="promoter-order-card__total">${parseFloat(order.total).toFixed(2)}</span>
                         {isPaid && (
-                          <button
-                            className="btn btn-accent promoter-order-card__pickup-btn"
-                            onClick={() => markPickedUp(order.id)}
-                          >
-                            Mark Picked Up
-                          </button>
+                          <div className="promoter-order-card__actions">
+                            {order.fan?.phone && (
+                              <button
+                                className={`btn promoter-order-card__sms-btn ${smsState[order.id] === 'sent' ? 'promoter-order-card__sms-btn--sent' : smsState[order.id] === 'error' ? 'promoter-order-card__sms-btn--error' : ''}`}
+                                onClick={() => notifyFan(order.id)}
+                                disabled={!!smsState[order.id]}
+                              >
+                                {smsState[order.id] === 'sending' ? 'Sending…'
+                                  : smsState[order.id] === 'sent' ? 'Sent!'
+                                  : smsState[order.id] === 'error' ? 'Failed'
+                                  : 'Text Fan'}
+                              </button>
+                            )}
+                            <button
+                              className="btn btn-accent promoter-order-card__pickup-btn"
+                              onClick={() => markPickedUp(order.id)}
+                            >
+                              Mark Picked Up
+                            </button>
+                          </div>
                         )}
                       </div>
                     </li>
