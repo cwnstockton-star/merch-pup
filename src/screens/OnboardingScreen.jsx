@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import cowboyInline from '../assets/cowboyinlinebigg.webp';
-import orderNowPaw from '../assets/merchpupordernowpaw.webp';
+import orderNowPaw from '../assets/plurpup2.webp';
 import hiphopPaw from '../assets/hiphoppup1.webp';
 import './OnboardingScreen.css';
 
