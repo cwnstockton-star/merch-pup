@@ -249,21 +249,31 @@ export default function PromoterEventScreen() {
               <ul className="promoter-event__merch-list">
                 {merch.map((item) => (
                   <li key={item.id} className="promoter-merch-card">
-                    {item.image_url ? (
-                      <img src={item.image_url} alt={item.name} className="promoter-merch-card__img" />
-                    ) : (
-                      <div className="promoter-merch-card__img promoter-merch-card__img--empty" />
-                    )}
-                    <div className="promoter-merch-card__info">
-                      <h3 className="promoter-merch-card__name">{item.name}</h3>
-                      <p className="promoter-merch-card__price">${parseFloat(item.price).toFixed(2)}</p>
-                      {item.sizes?.length > 0 && (
-                        <p className="promoter-merch-card__meta">{item.sizes.join(' · ')}</p>
+                    <button
+                      className="promoter-merch-card__link"
+                      onClick={() => navigate(`/promoter/events/${eventId}/merch/${item.id}/edit`)}
+                      aria-label={`Edit ${item.name}`}
+                    >
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={item.name} className="promoter-merch-card__img" />
+                      ) : (
+                        <div className="promoter-merch-card__img promoter-merch-card__img--empty" />
                       )}
-                      <p className="promoter-merch-card__meta promoter-merch-card__qty">
-                        Qty: {item.quantity_available}
-                      </p>
-                    </div>
+                      <div className="promoter-merch-card__info">
+                        <h3 className="promoter-merch-card__name">{item.name}</h3>
+                        <p className="promoter-merch-card__price">${parseFloat(item.price).toFixed(2)}</p>
+                        {item.sizes?.length > 0 && (
+                          <p className="promoter-merch-card__meta">{item.sizes.join(' · ')}</p>
+                        )}
+                        <p className="promoter-merch-card__meta promoter-merch-card__qty">
+                          Qty: {item.quantity_available}
+                        </p>
+                      </div>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="promoter-merch-card__arrow" aria-hidden="true">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                      </svg>
+                    </button>
                   </li>
                 ))}
               </ul>

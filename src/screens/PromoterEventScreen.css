@@ -129,12 +129,27 @@
 }
 
 .promoter-merch-card {
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+}
+
+.promoter-merch-card__link {
   display: flex;
   align-items: center;
   gap: 14px;
+  width: 100%;
   padding: 12px;
-  border: 2px solid var(--color-gray-200);
-  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.promoter-merch-card__arrow {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--color-gray-400);
 }
 
 .promoter-merch-card__img {

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import { supabase } from '../lib/supabase';
+import { withTimeout } from '../lib/withTimeout';
 import { useAuth } from '../context/AuthContext';
 import './ConnectEventScreen.css';
 
@@ -20,27 +21,31 @@ export default function ConnectEventScreen() {
     const trimmed = code.trim().toUpperCase();
     setLoading(true);
 
-    // Look up event by code
-    const { data: event, error: fetchError } = await supabase
-      .from('events')
-      .select('id')
-      .eq('event_code', trimmed)
-      .single();
+    try {
+      // Look up event by code
+      const { data: event, error: fetchError } = await withTimeout(
+        supabase.from('events').select('id').eq('event_code', trimmed).single()
+      );
 
-    if (fetchError || !event) {
-      setError('Event code not found. Double-check the code and try again.');
+      if (fetchError || !event) {
+        setError('Event code not found. Double-check the code and try again.');
+        return;
+      }
+
+      // Record the connection (upsert so re-connecting is idempotent)
+      await withTimeout(
+        supabase.from('event_connections').upsert(
+          { fan_id: session.user.id, event_id: event.id },
+          { onConflict: 'fan_id,event_id' }
+        )
+      );
+
+      navigate(`/events/${event.id}`, { state: { autoFollowed: true } });
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Record the connection (upsert so re-connecting is idempotent)
-    await supabase.from('event_connections').upsert(
-      { fan_id: session.user.id, event_id: event.id },
-      { onConflict: 'fan_id,event_id' }
-    );
-
-    setLoading(false);
-    navigate(`/events/${event.id}`, { state: { autoFollowed: true } });
   }
 
   function handleScanTrigger() {

@@ -20,16 +20,30 @@ import PromoterSignupScreen from './screens/PromoterSignupScreen';
 import PromoterCreateEventScreen from './screens/PromoterCreateEventScreen';
 import PromoterEventScreen from './screens/PromoterEventScreen';
 import PromoterAddMerchScreen from './screens/PromoterAddMerchScreen';
+import PromoterSettingsScreen from './screens/PromoterSettingsScreen';
 
 // Redirects unauthenticated users to /login.
 // If requiredRole is set, also checks that the user's role matches.
 function ProtectedRoute({ requiredRole, children }) {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, loading, initError } = useAuth();
 
   if (loading) {
     return (
       <div className="screen" style={{ alignItems: 'center', justifyContent: 'center' }}>
         <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)' }}>Loading…</p>
+      </div>
+    );
+  }
+
+  if (initError && !session) {
+    return (
+      <div className="screen" style={{ alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)', textAlign: 'center', padding: '0 24px' }}>
+          Taking longer than expected to sign you in.
+        </p>
+        <button className="btn btn-primary" onClick={() => window.location.reload()}>
+          Reload
+        </button>
       </div>
     );
   }
@@ -75,6 +89,8 @@ function AppRoutes() {
       <Route path="/promoter/events/new" element={<ProtectedRoute requiredRole="promoter"><PromoterCreateEventScreen /></ProtectedRoute>} />
       <Route path="/promoter/events/:eventId" element={<ProtectedRoute requiredRole="promoter"><PromoterEventScreen /></ProtectedRoute>} />
       <Route path="/promoter/events/:eventId/merch/new" element={<ProtectedRoute requiredRole="promoter"><PromoterAddMerchScreen /></ProtectedRoute>} />
+      <Route path="/promoter/events/:eventId/merch/:merchId/edit" element={<ProtectedRoute requiredRole="promoter"><PromoterAddMerchScreen /></ProtectedRoute>} />
+      <Route path="/promoter/settings" element={<ProtectedRoute requiredRole="promoter"><PromoterSettingsScreen /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

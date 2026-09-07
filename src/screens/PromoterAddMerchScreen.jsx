@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { withTimeout } from '../lib/withTimeout';
 import Logo from '../components/Logo';
 import './CreateAccountScreen.css';
 import './PromoterCreateEventScreen.css';
@@ -10,7 +11,8 @@ const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'One Size'];
 const CATEGORIES = ['Tops', 'Accessories', 'Art', 'Music', 'Other'];
 
 export default function PromoterAddMerchScreen() {
-  const { eventId } = useParams();
+  const { eventId, merchId } = useParams();
+  const isEditing = Boolean(merchId);
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: '',
@@ -22,8 +24,41 @@ export default function PromoterAddMerchScreen() {
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(isEditing);
+  const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!isEditing) return;
+
+    async function loadItem() {
+      const { data } = await supabase
+        .from('merch_items')
+        .select('*')
+        .eq('id', merchId)
+        .single();
+
+      if (!data) {
+        setNotFound(true);
+        setInitialLoading(false);
+        return;
+      }
+
+      setForm({
+        name: data.name || '',
+        description: data.description || '',
+        price: data.price ?? '',
+        quantity: data.quantity_available ?? '',
+        category: data.category || 'Tops',
+      });
+      setSelectedSizes(data.sizes || []);
+      setExistingImageUrl(data.image_url || null);
+      setInitialLoading(false);
+    }
+    loadItem();
+  }, [isEditing, merchId]);
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -47,46 +82,70 @@ export default function PromoterAddMerchScreen() {
     setError('');
     setLoading(true);
 
-    let imageUrl = null;
+    try {
+      let imageUrl = existingImageUrl;
 
-    if (imageFile) {
-      const fileExt = imageFile.name.split('.').pop();
-      const filePath = `${eventId}/${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from('merch-images')
-        .upload(filePath, imageFile);
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const filePath = `${eventId}/${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await withTimeout(
+          supabase.storage.from('merch-images').upload(filePath, imageFile)
+        );
 
-      if (uploadError) {
-        setError('Image upload failed: ' + uploadError.message);
-        setLoading(false);
+        if (uploadError) {
+          setError('Image upload failed: ' + uploadError.message);
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('merch-images')
+          .getPublicUrl(filePath);
+        imageUrl = publicUrl;
+      }
+
+      const itemPayload = {
+        name: form.name,
+        description: form.description,
+        price: parseFloat(form.price),
+        sizes: selectedSizes,
+        quantity_available: parseInt(form.quantity, 10),
+        image_url: imageUrl,
+        category: form.category,
+      };
+
+      const { error: saveError } = await withTimeout(
+        isEditing
+          ? supabase.from('merch_items').update(itemPayload).eq('id', merchId)
+          : supabase.from('merch_items').insert({ ...itemPayload, event_id: eventId })
+      );
+
+      if (saveError) {
+        setError(saveError.message);
         return;
       }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('merch-images')
-        .getPublicUrl(filePath);
-      imageUrl = publicUrl;
+      navigate(`/promoter/events/${eventId}`);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  }
 
-    const { error: insertError } = await supabase.from('merch_items').insert({
-      event_id: eventId,
-      name: form.name,
-      description: form.description,
-      price: parseFloat(form.price),
-      sizes: selectedSizes,
-      quantity_available: parseInt(form.quantity, 10),
-      image_url: imageUrl,
-      category: form.category,
-    });
+  if (initialLoading) {
+    return (
+      <div className="screen" style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)' }}>Loading…</p>
+      </div>
+    );
+  }
 
-    setLoading(false);
-
-    if (insertError) {
-      setError(insertError.message);
-      return;
-    }
-
-    navigate(`/promoter/events/${eventId}`);
+  if (notFound) {
+    return (
+      <div className="screen" style={{ padding: 32 }}>
+        <p style={{ color: 'var(--color-gray-600)' }}>Item not found.</p>
+      </div>
+    );
   }
 
   return (
@@ -112,7 +171,7 @@ export default function PromoterAddMerchScreen() {
         <div className="create__heading-wrap">
           <div className="create__heading-highlight" aria-hidden="true" />
           <h1 className="create__heading">
-            Add<br />Item.
+            {isEditing ? <>Edit<br />Item.</> : <>Add<br />Item.</>}
           </h1>
         </div>
 
@@ -126,8 +185,8 @@ export default function PromoterAddMerchScreen() {
           <div className="input-group">
             <label className="input-label">Photo</label>
             <label className="merch-upload__zone" htmlFor="image-upload">
-              {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="merch-upload__preview" />
+              {imagePreview || existingImageUrl ? (
+                <img src={imagePreview || existingImageUrl} alt="Preview" className="merch-upload__preview" />
               ) : (
                 <div className="merch-upload__placeholder">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -211,7 +270,9 @@ export default function PromoterAddMerchScreen() {
 
           <div className="create__actions">
             <button type="submit" className="btn btn-primary btn-lg btn-block create__cta" disabled={loading}>
-              {loading ? 'Adding item…' : 'Add to Event'}
+              {loading
+                ? (isEditing ? 'Saving…' : 'Adding item…')
+                : (isEditing ? 'Save Changes' : 'Add to Event')}
             </button>
           </div>
         </form>

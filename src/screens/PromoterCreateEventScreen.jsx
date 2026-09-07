@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { generateEventCode } from '../lib/utils';
+import { withTimeout } from '../lib/withTimeout';
 import Logo from '../components/Logo';
 import './CreateAccountScreen.css';
 import './PromoterCreateEventScreen.css';
@@ -33,32 +34,38 @@ export default function PromoterCreateEventScreen() {
     setError('');
     setLoading(true);
 
-    const { data: event, error: insertError } = await supabase
-      .from('events')
-      .insert({
-        owner_id: session.user.id,
-        artist: form.artist,
-        name: form.name || form.artist,
-        date: form.date,
-        venue_name: form.venueName,
-        city: form.city,
-        address: form.address,
-        description: form.description,
-        pickup_window: form.pickupWindow,
-        directions: form.directions.split('\n').filter((d) => d.trim()),
-        event_code: generateEventCode(),
-      })
-      .select()
-      .single();
+    try {
+      const { data: event, error: insertError } = await withTimeout(
+        supabase
+          .from('events')
+          .insert({
+            owner_id: session.user.id,
+            artist: form.artist,
+            name: form.name || form.artist,
+            date: form.date,
+            venue_name: form.venueName,
+            city: form.city,
+            address: form.address,
+            description: form.description,
+            pickup_window: form.pickupWindow,
+            directions: form.directions.split('\n').filter((d) => d.trim()),
+            event_code: generateEventCode(),
+          })
+          .select()
+          .single()
+      );
 
-    setLoading(false);
+      if (insertError) {
+        setError(insertError.message);
+        return;
+      }
 
-    if (insertError) {
-      setError(insertError.message);
-      return;
+      navigate(`/promoter/events/${event.id}`);
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    navigate(`/promoter/events/${event.id}`);
   }
 
   return (

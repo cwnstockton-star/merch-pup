@@ -15,6 +15,28 @@
   border-bottom: 2px solid var(--color-gray-200);
 }
 
+.promoter-dash__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.promoter-dash__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-gray-600);
+  transition: color 0.15s;
+}
+
+.promoter-dash__icon-btn:hover {
+  color: var(--color-primary);
+}
+
 .promoter-dash__signout {
   font-family: var(--font-heading);
   font-size: 13px;

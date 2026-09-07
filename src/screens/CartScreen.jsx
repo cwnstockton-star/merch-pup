@@ -4,6 +4,7 @@ import BottomNav from '../components/BottomNav';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { withTimeout } from '../lib/withTimeout';
 import './CartScreen.css';
 
 export default function CartScreen() {
@@ -55,9 +56,9 @@ export default function CartScreen() {
         cancelUrl: `${origin}/cart`,
       };
 
-      const { data, error: fnError } = await supabase.functions.invoke('create-checkout-session', {
-        body: payload,
-      });
+      const { data, error: fnError } = await withTimeout(
+        supabase.functions.invoke('create-checkout-session', { body: payload })
+      );
 
       if (fnError || data?.error) throw new Error(fnError?.message || data.error);
       window.location.href = data.url;

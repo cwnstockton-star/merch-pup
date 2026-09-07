@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { withTimeout } from '../lib/withTimeout';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import './PromoterDashboardScreen.css';
@@ -10,6 +11,7 @@ export default function PromoterDashboardScreen() {
   const { session, signOut } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   // Stripe Connect state
   const [stripeStatus, setStripeStatus] = useState(null); // null = loading, { connected, chargesEnabled }
@@ -18,22 +20,30 @@ export default function PromoterDashboardScreen() {
 
   useEffect(() => {
     async function loadAll() {
-      const [eventsResult, statusResult] = await Promise.all([
-        supabase
-          .from('events')
-          .select('*')
-          .eq('owner_id', session.user.id)
-          .order('date', { ascending: true }),
-        supabase.functions.invoke('get-connect-status'),
-      ]);
+      setLoadError(false);
+      try {
+        const [eventsResult, statusResult] = await withTimeout(
+          Promise.all([
+            supabase
+              .from('events')
+              .select('*')
+              .eq('owner_id', session.user.id)
+              .order('date', { ascending: true }),
+            supabase.functions.invoke('get-connect-status'),
+          ])
+        );
 
-      setEvents(eventsResult.data || []);
-      if (!statusResult.error && statusResult.data) {
-        setStripeStatus(statusResult.data);
-      } else {
-        setStripeStatus({ connected: false, chargesEnabled: false });
+        setEvents(eventsResult.data || []);
+        if (!statusResult.error && statusResult.data) {
+          setStripeStatus(statusResult.data);
+        } else {
+          setStripeStatus({ connected: false, chargesEnabled: false });
+        }
+      } catch {
+        setLoadError(true);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     loadAll();
   }, [session.user.id]);
@@ -43,12 +53,14 @@ export default function PromoterDashboardScreen() {
     setConnectLoading(true);
     try {
       const origin = window.location.origin;
-      const { data, error } = await supabase.functions.invoke('create-connect-account', {
-        body: {
-          returnUrl: `${origin}/promoter/dashboard`,
-          refreshUrl: `${origin}/promoter/dashboard`,
-        },
-      });
+      const { data, error } = await withTimeout(
+        supabase.functions.invoke('create-connect-account', {
+          body: {
+            returnUrl: `${origin}/promoter/dashboard`,
+            refreshUrl: `${origin}/promoter/dashboard`,
+          },
+        })
+      );
       if (error || data?.error) throw new Error(error?.message || data.error);
       window.location.href = data.url;
     } catch (err) {
@@ -72,7 +84,19 @@ export default function PromoterDashboardScreen() {
     <div className="promoter-dash screen">
       <header className="promoter-dash__header">
         <Logo size="sm" />
-        <button className="promoter-dash__signout" onClick={handleSignOut}>Sign out</button>
+        <div className="promoter-dash__header-actions">
+          <button
+            className="promoter-dash__icon-btn"
+            onClick={() => navigate('/promoter/settings')}
+            aria-label="Account settings"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+          <button className="promoter-dash__signout" onClick={handleSignOut}>Sign out</button>
+        </div>
       </header>
 
       {/* ── Stripe Connect banner ── */}
@@ -118,6 +142,14 @@ export default function PromoterDashboardScreen() {
       <div className="promoter-dash__content">
         {loading ? (
           <p className="promoter-dash__state-msg">Loading your events…</p>
+        ) : loadError ? (
+          <div className="promoter-dash__empty">
+            <p className="promoter-dash__state-msg">Couldn't load your events.</p>
+            <p className="promoter-dash__state-sub">Check your connection and try again.</p>
+            <button className="btn btn-accent" onClick={() => window.location.reload()}>
+              Reload
+            </button>
+          </div>
         ) : events.length === 0 ? (
           <div className="promoter-dash__empty">
             <p className="promoter-dash__state-msg">No events yet.</p>
