@@ -19,6 +19,7 @@ export default function OrderConfirmationScreen() {
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
+    console.warn('[OrderConfirmation] mounted', { sessionId });
     if (!sessionId) {
       setError('No session ID found.');
       setLoading(false);
@@ -27,9 +28,11 @@ export default function OrderConfirmationScreen() {
 
     async function verifyAndLoad() {
       try {
+        console.warn('[OrderConfirmation] invoking verify-checkout-session', { sessionId });
         const { data, error: fnError } = await supabase.functions.invoke('verify-checkout-session', {
           body: { sessionId },
         });
+        console.warn('[OrderConfirmation] verify-checkout-session result', { data, fnError });
 
         if (fnError || data?.error) throw new Error(fnError?.message || data.error);
 

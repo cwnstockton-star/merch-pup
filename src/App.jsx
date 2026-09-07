@@ -49,6 +49,7 @@ function ProtectedRoute({ requiredRole, children }) {
   }
 
   if (!session) {
+    console.warn('[ProtectedRoute] no session — redirecting to /login');
     return <Navigate to="/login" replace />;
   }
 
@@ -56,6 +57,7 @@ function ProtectedRoute({ requiredRole, children }) {
   // "wrong role" below — don't let that silently redirect someone away from
   // the page they were trying to reach (e.g. mid order-confirmation).
   if (requiredRole && profileError && profile?.role !== requiredRole) {
+    console.warn('[ProtectedRoute] profileError, showing retry prompt', { requiredRole, profile });
     return (
       <div className="screen" style={{ alignItems: 'center', justifyContent: 'center', gap: 16 }}>
         <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)', textAlign: 'center', padding: '0 24px' }}>
@@ -69,6 +71,7 @@ function ProtectedRoute({ requiredRole, children }) {
   }
 
   if (requiredRole && profile?.role !== requiredRole) {
+    console.warn('[ProtectedRoute] role mismatch — redirecting', { requiredRole, profile, profileError });
     // Send promoter users to their dashboard, fans to the home feed
     return <Navigate to={profile?.role === 'promoter' ? '/promoter/dashboard' : '/home'} replace />;
   }
