@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initError, setInitError] = useState(false);
+  const [profileError, setProfileError] = useState(false);
 
   useEffect(() => {
     let settled = false;
@@ -58,6 +59,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function fetchProfile(userId) {
+    setProfileError(false);
     try {
       const { data } = await withTimeout(
         supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
@@ -74,7 +76,11 @@ export function AuthProvider({ children }) {
         }
       }
     } catch {
-      // Swallow — falling through to setLoading(false) below beats hanging forever.
+      // Don't let a slow/failed fetch masquerade as "wrong role" — ProtectedRoute
+      // treats a null profile as a role mismatch and redirects, which would
+      // silently bounce a user off a page (e.g. mid order-confirmation) instead
+      // of just retrying. Surface it instead.
+      setProfileError(true);
     } finally {
       setLoading(false);
     }
@@ -104,7 +110,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, initError, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, profile, loading, initError, profileError, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -25,7 +25,7 @@ import PromoterSettingsScreen from './screens/PromoterSettingsScreen';
 // Redirects unauthenticated users to /login.
 // If requiredRole is set, also checks that the user's role matches.
 function ProtectedRoute({ requiredRole, children }) {
-  const { session, profile, loading, initError } = useAuth();
+  const { session, profile, loading, initError, profileError } = useAuth();
 
   if (loading) {
     return (
@@ -50,6 +50,22 @@ function ProtectedRoute({ requiredRole, children }) {
 
   if (!session) {
     return <Navigate to="/login" replace />;
+  }
+
+  // A failed/slow profile fetch leaves profile null, which looks identical to
+  // "wrong role" below — don't let that silently redirect someone away from
+  // the page they were trying to reach (e.g. mid order-confirmation).
+  if (requiredRole && profileError && profile?.role !== requiredRole) {
+    return (
+      <div className="screen" style={{ alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <p style={{ color: 'var(--color-gray-400)', fontFamily: 'var(--font-heading)', textAlign: 'center', padding: '0 24px' }}>
+          Couldn't verify your account. Check your connection and try again.
+        </p>
+        <button className="btn btn-primary" onClick={() => window.location.reload()}>
+          Reload
+        </button>
+      </div>
+    );
   }
 
   if (requiredRole && profile?.role !== requiredRole) {
