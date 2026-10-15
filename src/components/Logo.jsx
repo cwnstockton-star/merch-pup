@@ -1,4 +1,4 @@
-import logoImg from '../assets/merchpuplogoblob26_orange.png';
+import logoImg from '../assets/merchpup_sketch.png';
 import './Logo.css';
 
 export default function Logo({ size = 'md' }) {
