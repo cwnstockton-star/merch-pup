@@ -331,21 +331,7 @@
   width: 100%;
   padding: 16px;
   font-size: 16px;
-  border-radius: var(--radius-md);
-  box-shadow: 4px 4px 0 var(--color-accent);
-  transition: background 0.15s ease, color 0.15s ease,
-              box-shadow 0.12s ease, transform 0.1s ease;
-}
-
-.cart__checkout-btn:hover {
-  background: var(--color-accent);
-  color: var(--color-primary);
-  box-shadow: 4px 4px 0 var(--color-primary);
-}
-
-.cart__checkout-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--color-accent);
+  border-radius: var(--radius-btn);
 }
 
 .cart__footer-note {

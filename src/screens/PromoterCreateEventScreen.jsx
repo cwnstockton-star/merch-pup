@@ -173,7 +173,7 @@ export default function PromoterCreateEventScreen() {
           {error && <p className="auth-error">{error}</p>}
 
           <div className="create__actions">
-            <button type="submit" className="btn btn-primary btn-lg btn-block create__cta" disabled={loading}>
+            <button type="submit" className="btn btn-primary btn-tilt btn-lg btn-block create__cta" disabled={loading}>
               {loading ? 'Creating event…' : 'Create Event'}
             </button>
           </div>

@@ -28,6 +28,7 @@
   --radius-lg: 20px;
   --radius-xl: 28px;
   --radius-full: 9999px;
+  --radius-btn: 4px;
 
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
   --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
@@ -86,7 +87,7 @@ body {
   font-size: 16px;
   letter-spacing: 0.01em;
   padding: 15px 28px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-btn);
   border: none;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
@@ -140,6 +141,57 @@ body {
 .btn-lg {
   font-size: 18px;
   padding: 18px 36px;
+}
+
+/* Main "move forward" buttons — an orange slab tilted behind the button,
+   like the headline slab on the splash screen.
+   ::before is the slab, ::after is the button face drawn on top of it.
+   isolation keeps both layers inside the button, so they can't slip
+   behind a parent's background. Change the face color via --tilt-face. */
+.btn-tilt {
+  --tilt-face: var(--color-primary);
+  --tilt-slab: var(--color-accent);
+  position: relative;
+  isolation: isolate;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.btn-tilt::before,
+.btn-tilt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-tilt::before {
+  background: var(--tilt-slab);
+  transform: translate(5px, 6px) rotate(-1.5deg);
+}
+
+.btn-tilt::after {
+  background: var(--tilt-face);
+}
+
+/* slab flips to black on hover — inverts the accent */
+.btn-tilt:hover:not(:disabled) {
+  --tilt-face: var(--color-accent);
+  --tilt-slab: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-tilt:active:not(:disabled) {
+  transform: translate(2px, 2px);
+}
+
+.btn-tilt:active:not(:disabled)::before {
+  transform: translate(3px, 4px) rotate(-1.5deg);
+}
+
+.btn-tilt:disabled::before {
+  display: none;
 }
 
 /* ── Form inputs ── */

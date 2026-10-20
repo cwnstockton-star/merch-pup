@@ -172,7 +172,7 @@
   font-size: 12px;
   letter-spacing: 0.02em;
   padding: 9px 0;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-btn);
   border: 2px solid var(--color-primary);
   background: var(--color-primary);
   color: var(--color-bg);

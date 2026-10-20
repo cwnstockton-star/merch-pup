@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import cowboyInline from '../assets/cowboyinlinebigg.webp';
+import cowboyInline from '../assets/cowboyinlinebigg 3.webp';
 import orderNowPaw from '../assets/plurpup2.webp';
 import hiphopPaw from '../assets/hiphoppup1.webp';
 import './OnboardingScreen.css';
@@ -101,7 +101,7 @@ export default function OnboardingScreen() {
         </div>
 
         <button
-          className="btn btn-primary btn-lg btn-block onboard__cta"
+          className="btn btn-primary btn-tilt btn-lg btn-block onboard__cta"
           onClick={handleNext}
         >
           {isLast ? 'Get Started' : 'Next'}

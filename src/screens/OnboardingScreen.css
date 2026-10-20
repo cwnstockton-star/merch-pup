@@ -128,21 +128,7 @@
   background: var(--color-primary);
 }
 
-/* ── CTA — same hard yellow shadow as splash ── */
+/* ── CTA — tilted slab comes from .btn-tilt ── */
 .onboard__cta {
   width: 100%;
-  box-shadow: 4px 4px 0px var(--color-accent);
-  transition: background 0.15s ease, color 0.15s ease,
-              box-shadow 0.12s ease, transform 0.1s ease;
-}
-
-.onboard__cta:hover {
-  background: var(--color-accent);
-  color: var(--color-primary);
-  box-shadow: 4px 4px 0px var(--color-primary);
-}
-
-.onboard__cta:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--color-accent);
 }

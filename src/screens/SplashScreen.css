@@ -56,11 +56,19 @@
   z-index: 1;
 }
 
-/* ── 4. Body — left-aligned, poster grid ── */
+/* Slightly smaller pup on this screen so the headline leads */
+.splash .logo--xl .logo__img {
+  width: 160px;
+  height: 160px;
+}
+
+/* ── 4. Body — centered, shares the logo's center line ── */
 .splash__body {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
+  flex: 1;
   gap: 20px;
   padding: 0 var(--screen-padding) 40px;
   position: relative;
@@ -71,15 +79,13 @@
 .splash__tagline-wrap {
   position: relative;
   /* generous padding so the slab bleeds visibly past the text */
-  padding: 8px 14px 8px 0;
+  padding: 8px 14px;
 }
 
 .splash__tagline-highlight {
   position: absolute;
-  inset: 0;
-  /* extends slightly left of the text */
-  left: -6px;
-  right: -10px;
+  /* bleeds evenly past both sides of the text */
+  inset: 0 -8px;
   background: var(--color-accent);
   /* the signature slight rotation — hand-placed feel */
   transform: rotate(-1.8deg) skewX(-0.3deg);
@@ -105,44 +111,27 @@
   font-size: 15px;
   line-height: 1.65;
   color: var(--color-gray-600);
-  text-align: left;
   max-width: 300px;
 }
 
-/* ── 7. Thick rule ── */
-.splash__rule {
-  width: 100%;
-  height: 4px;
-  background: var(--color-primary);
-  border: none;
-  margin: 4px 0;
-  flex-shrink: 0;
-}
-
-/* ── 8. CTA block ── */
+/* ── 7. CTA block — pinned to the bottom third, where thumbs reach ── */
 .splash__actions {
   width: 100%;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
 }
 
-/* Yellow hard drop-shadow — risograph / screen-print energy */
-.splash__cta {
-  box-shadow: 4px 4px 0px var(--color-accent);
-  transition: background 0.15s ease, color 0.15s ease,
-              box-shadow 0.12s ease, transform 0.1s ease;
-}
-
-.splash__cta:hover {
-  background: var(--color-accent);
-  color: var(--color-primary);
-  /* shadow flips to black on hover — inverts the accent */
-  box-shadow: 4px 4px 0px var(--color-primary);
-}
-
-.splash__cta:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--color-accent);
+/* Home-screen size tweaks — the tilted slab comes from .btn-tilt */
+.splash .splash__cta {
+  /* a touch shorter than btn-lg (~52px tall) so the headline leads;
+     still above the 44–48px tap-target minimums */
+  padding-top: 15px;
+  padding-bottom: 15px;
+  /* hug the text instead of spanning the full width */
+  width: auto;
+  padding-left: 48px;
+  padding-right: 48px;
 }

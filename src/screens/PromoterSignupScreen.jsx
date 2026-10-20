@@ -60,7 +60,7 @@ export default function PromoterSignupScreen() {
           </p>
           <div className="create__actions" style={{ marginTop: 32 }}>
             <button
-              className="btn btn-primary btn-lg btn-block create__cta"
+              className="btn btn-primary btn-tilt btn-lg btn-block create__cta"
               onClick={() => navigate('/login')}
             >
               Go to Sign In
@@ -149,7 +149,7 @@ export default function PromoterSignupScreen() {
           <div className="create__actions">
             <button
               type="submit"
-              className="btn btn-primary btn-lg btn-block create__cta"
+              className="btn btn-primary btn-tilt btn-lg btn-block create__cta"
               disabled={loading}
             >
               {loading ? 'Creating account…' : 'Create Promoter Account'}

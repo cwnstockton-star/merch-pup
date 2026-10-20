@@ -18,7 +18,7 @@ export default function SplashScreen() {
         <Logo size="xl" />
       </div>
 
-      {/* ── Body — left-aligned, concert-poster layout ── */}
+      {/* ── Body — centered under the logo ── */}
       <div className="splash__body">
 
         {/* Tagline with rotated yellow slab behind it */}
@@ -33,13 +33,10 @@ export default function SplashScreen() {
           Preorder your merch. Pick it up at the merch table. Enjoy the show.
         </p>
 
-        {/* Thick horizontal rule */}
-        <div className="splash__rule" role="separator" />
-
         {/* CTA */}
         <div className="splash__actions">
           <button
-            className="btn btn-primary btn-lg btn-block splash__cta"
+            className="btn btn-primary btn-tilt btn-lg btn-block splash__cta"
             onClick={() => navigate('/onboarding')}
           >
             Get Started

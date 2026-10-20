@@ -106,23 +106,6 @@
   margin-top: 8px;
 }
 
-/* Same hard yellow drop-shadow as splash CTA */
-.create__cta {
-  box-shadow: 4px 4px 0px var(--color-accent);
-  transition: background 0.15s ease, color 0.15s ease,
-              box-shadow 0.12s ease, transform 0.1s ease;
-}
-
-.create__cta:hover {
-  background: var(--color-accent);
-  color: var(--color-primary);
-  box-shadow: 4px 4px 0px var(--color-primary);
-}
-
-.create__cta:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--color-accent);
-}
 
 /* ── Sign-in nudge ── */
 .create__signin {
