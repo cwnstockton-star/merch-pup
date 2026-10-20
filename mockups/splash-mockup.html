@@ -1,0 +1,117 @@
+<!doctype html>
+<!--
+  Merch PUP — Welcome (splash) screen mockup (portfolio / deck use only)
+  Standalone copy of the app's splash screen. Not connected to the app.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merch PUP — Welcome Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #111111;
+    --orange: #e8601c;
+    --white: #ffffff;
+    --gray-600: #666666;
+    --heading: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+    --pad: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #e8e8e8; font-family: var(--body); color: var(--black);
+    display: flex; justify-content: center; -webkit-font-smoothing: antialiased;
+  }
+
+  .phone {
+    position: relative; width: 393px; max-width: 100%; min-height: 100%;
+    background: var(--white); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 256px; opacity: 0.04; mix-blend-mode: multiply;
+    pointer-events: none; z-index: 10;
+  }
+  .top-bar { height: 10px; background: var(--orange); flex-shrink: 0; }
+
+  .logo {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    padding: 44px var(--pad) 32px;
+  }
+  .logo img { width: 160px; height: 138px; object-fit: contain; display: block; }
+  .logo span {
+    font-family: var(--heading); font-weight: 700; font-size: 18px;
+    letter-spacing: 0.22em; text-transform: uppercase;
+  }
+
+  .body {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    text-align: center; gap: 20px; padding: 0 var(--pad) 40px;
+  }
+  .tagline-wrap { position: relative; padding: 8px 14px; }
+  .tagline-wrap::before {
+    content: ''; position: absolute; inset: 0 -8px; background: var(--orange);
+    transform: rotate(-1.8deg) skewX(-0.3deg);
+    clip-path: polygon(0% 1%, 100% 0%, 99.5% 99%, 0.5% 100%);
+  }
+  .tagline {
+    position: relative; font-family: var(--heading); font-weight: 700;
+    font-size: 42px; line-height: 1.05; letter-spacing: -0.03em; color: var(--white);
+  }
+  .sub { font-size: 15px; line-height: 1.65; color: var(--gray-600); max-width: 300px; }
+
+  .actions {
+    margin-top: auto; width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .btn {
+    position: relative; isolation: isolate;
+    font: 700 18px/1 var(--heading); letter-spacing: 0.01em; color: var(--white);
+    padding: 17px 48px; border-radius: 4px;
+  }
+  .btn::before, .btn::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  }
+  .btn::before { background: var(--orange); transform: translate(5px, 6px) rotate(-1.5deg); }
+  .btn::after { background: var(--black); }
+
+  .signin { font-size: 14px; color: var(--gray-600); text-decoration: underline; text-underline-offset: 3px; }
+  .signin b { color: var(--black); }
+
+  /* black footer band — tall enough for the iPhone home indicator to sit in */
+  .bottom-bar { height: 21px; background: var(--black); flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="top-bar"></div>
+
+  <div class="logo">
+    <img src="../src/assets/merchpup_sketch.png" alt="Merch PUP">
+    <span>Merch Pup</span>
+  </div>
+
+  <div class="body">
+    <div class="tagline-wrap">
+      <h1 class="tagline">Ditch the line.<br>Join the crowd.</h1>
+    </div>
+    <p class="sub">Preorder your merch. Pick it up at the merch table. Enjoy the show.</p>
+
+    <div class="actions">
+      <span class="btn">Get Started</span>
+      <span class="signin">Already have an account? <b>Sign in</b></span>
+    </div>
+  </div>
+
+  <div class="bottom-bar"></div>
+</div>
+</body>
+</html>

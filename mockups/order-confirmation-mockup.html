@@ -1,0 +1,300 @@
+<!doctype html>
+<!--
+  Merch PUP — Order Confirmation mockup (portfolio / deck use only)
+  Redesigned with the new branding. Not connected to the app; all
+  bands, venues, order numbers and the QR code are made up.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merch PUP — Order Confirmation Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #111111;
+    --orange: #e8601c;
+    --white: #ffffff;
+    --cream: #f4efe6;
+    --gray-50: #fafafa;
+    --gray-200: #e5e5e5;
+    --gray-400: #a3a3a3;
+    --gray-600: #666666;
+    --heading: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+    --pad: 20px;
+    --radius-btn: 4px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #e8e8e8; font-family: var(--body); color: var(--black);
+    display: flex; justify-content: center; -webkit-font-smoothing: antialiased;
+  }
+
+  .phone {
+    position: relative; width: 393px; max-width: 100%; min-height: 100vh;
+    background: var(--gray-50); overflow: hidden; padding-bottom: 34px;
+  }
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 256px; opacity: 0.04; mix-blend-mode: multiply;
+    pointer-events: none; z-index: 100;
+  }
+  .top-bar { height: 8px; background: var(--orange); }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--white); border-bottom: 2px solid var(--gray-200);
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 18px var(--pad) 26px;
+  }
+  .pup { position: relative; width: 104px; height: 90px; }
+  .pup img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .pup__check {
+    position: absolute; right: -10px; bottom: -4px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--orange); color: var(--white); border: 3px solid var(--white);
+    display: grid; place-items: center;
+  }
+
+  .headline-wrap { position: relative; padding: 6px 14px; margin-top: 18px; }
+  .headline-wrap::before {
+    content: ''; position: absolute; inset: 0 -6px; background: var(--orange);
+    transform: rotate(-1.8deg) skewX(-0.3deg);
+    clip-path: polygon(0% 1%, 100% 0%, 99.5% 99%, 0.5% 100%);
+  }
+  .headline {
+    position: relative; font-family: var(--heading); font-weight: 700;
+    font-size: 36px; line-height: 1.05; letter-spacing: -0.03em; color: var(--white);
+  }
+  .hero__sub { margin-top: 14px; font-size: 15px; line-height: 1.55; color: var(--gray-600); max-width: 290px; }
+  .hero__sub b { color: var(--black); }
+
+  /* ── Pickup ticket ── */
+  .ticket {
+    margin: 26px var(--pad) 0; background: var(--white);
+    border: 2px solid var(--black); border-radius: var(--radius-btn);
+    box-shadow: 5px 5px 0 var(--orange);
+  }
+  .ticket__top { display: flex; flex-direction: column; align-items: center; padding: 18px 20px 20px; }
+  .label {
+    font: 700 11px/1 var(--heading); letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray-600);
+  }
+  .qr {
+    margin-top: 14px; padding: 10px; background: var(--white);
+    border: 2px solid var(--black); border-radius: var(--radius-btn);
+  }
+  .qr svg { display: block; width: 168px; height: 168px; }
+  .order-id {
+    margin-top: 12px; font: 700 20px/1 var(--heading); letter-spacing: 0.18em;
+  }
+
+  /* perforated tear line with notches */
+  .perf { position: relative; height: 20px; }
+  .perf::before {
+    content: ''; position: absolute; left: 18px; right: 18px; top: 50%;
+    border-top: 2px dashed var(--gray-200);
+  }
+  .perf span {
+    position: absolute; top: 50%; width: 20px; height: 20px; margin-top: -10px;
+    border-radius: 50%; background: var(--gray-50); border: 2px solid var(--black);
+  }
+  .perf span:first-child { left: -11px; clip-path: inset(0 0 0 50%); }
+  .perf span:last-child { right: -11px; clip-path: inset(0 50% 0 0); }
+
+  .ticket__bottom { padding: 6px 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+  .show { display: flex; align-items: center; gap: 10px; }
+  .show__tag {
+    background: var(--black); color: var(--white);
+    font: 700 10px/1 var(--heading); letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 7px; border-radius: 2px; transform: rotate(-1.5deg);
+  }
+  .show__name { font-family: var(--heading); font-weight: 700; font-size: 18px; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 12px; }
+  .info .label { font-size: 10px; }
+  .info p { margin-top: 5px; font-family: var(--heading); font-weight: 600; font-size: 15px; line-height: 1.25; }
+  .info small { display: block; margin-top: 2px; font-family: var(--body); font-weight: 400; font-size: 12px; color: var(--gray-600); }
+
+  /* ── Sections ── */
+  .section { margin: 32px var(--pad) 0; }
+  .section__title {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    font-family: var(--heading); font-weight: 700; font-size: 18px;
+  }
+  .section__title::before {
+    content: ''; width: 10px; height: 10px; background: var(--orange); transform: rotate(-8deg);
+  }
+
+  .steps { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .steps li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.45; }
+  .steps .num {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 3px;
+    background: var(--black); color: var(--white);
+    font: 700 13px/26px var(--heading); text-align: center;
+  }
+
+  .items {
+    background: var(--white); border: 2px solid var(--black); border-radius: var(--radius-btn);
+  }
+  .item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 2px solid var(--gray-200); }
+  .item__img {
+    width: 52px; height: 52px; flex-shrink: 0; border: 2px solid var(--black); border-radius: 3px;
+    display: grid; place-items: center; position: relative;
+  }
+  .item__img--cream { background: var(--cream); }
+  .item__img--orange { background: var(--orange); }
+  .item__img svg { width: 40px; height: 40px; }
+  .item__img img { position: absolute; width: 14px; left: 50%; top: 40%; transform: translateX(-50%); }
+  .item__img--cream img { filter: invert(1); }
+  .item__info { flex: 1; }
+  .item__name { font-family: var(--heading); font-weight: 700; font-size: 15px; }
+  .item__meta { margin-top: 2px; font-size: 12px; color: var(--gray-600); }
+  .item__price { font-family: var(--heading); font-weight: 700; font-size: 15px; }
+  .total {
+    display: flex; justify-content: space-between; padding: 14px;
+    font-family: var(--heading); font-weight: 700; font-size: 17px;
+  }
+
+  /* ── Actions ── */
+  .actions { margin: 30px var(--pad) 0; display: flex; flex-direction: column; gap: 18px; }
+  .btn {
+    position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center;
+    font: 700 16px/1 var(--heading); padding: 17px; border-radius: var(--radius-btn);
+  }
+  .btn--primary { color: var(--white); }
+  .btn--primary::before, .btn--primary::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  }
+  .btn--primary::before { background: var(--orange); transform: translate(5px, 6px) rotate(-1.5deg); }
+  .btn--primary::after { background: var(--black); }
+  .btn--outline { border: 2px solid var(--black); background: var(--white); padding: 15px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="top-bar"></div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="pup">
+      <img src="../src/assets/merchpup_sketch.png" alt="Merch PUP">
+      <span class="pup__check">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>
+    </div>
+    <div class="headline-wrap"><h1 class="headline">You're all set.</h1></div>
+    <p class="hero__sub">Order <b>MP-4821</b> is confirmed. You're going to look so sick.</p>
+  </section>
+
+  <!-- Pickup ticket -->
+  <section class="ticket">
+    <div class="ticket__top">
+      <span class="label">Show this at the merch table</span>
+      <div class="qr"><svg id="qr" viewBox="0 0 25 25" shape-rendering="crispEdges"></svg></div>
+      <span class="order-id">MP-4821</span>
+    </div>
+    <div class="perf"><span></span><span></span></div>
+    <div class="ticket__bottom">
+      <div class="show">
+        <span class="show__tag">Tonight</span>
+        <span class="show__name">Velvet Static</span>
+      </div>
+      <div class="info-grid">
+        <div class="info">
+          <span class="label">Pickup window</span>
+          <p>7:00 – 11:00 PM<small>Doors open at 7</small></p>
+        </div>
+        <div class="info">
+          <span class="label">Venue</span>
+          <p>The Lantern Room<small>Tampa, FL</small></p>
+        </div>
+        <div class="info">
+          <span class="label">Date</span>
+          <p>Sat, Nov 7</p>
+        </div>
+        <div class="info">
+          <span class="label">Items</span>
+          <p>2 items</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Directions -->
+  <section class="section">
+    <h2 class="section__title">Pickup Directions</h2>
+    <ol class="steps">
+      <li><span class="num">1</span>Head to the merch table in the main lobby.</li>
+      <li><span class="num">2</span>Skip the line — use the orange Merch Pup pickup lane.</li>
+      <li><span class="num">3</span>Show your QR code, grab your merch, enjoy the show.</li>
+    </ol>
+  </section>
+
+  <!-- Order summary -->
+  <section class="section">
+    <h2 class="section__title">What You Ordered</h2>
+    <div class="items">
+      <div class="item">
+        <div class="item__img item__img--cream">
+          <svg viewBox="0 0 200 200"><path d="M62 22 86 12q14 18 28 0l24 10 46 30-20 34-18-10v112H54V76L36 86 16 52Z" fill="#111" stroke="#111" stroke-width="6" stroke-linejoin="round"/></svg>
+          <img src="../src/assets/merchpup_sketch.png" alt="">
+        </div>
+        <div class="item__info">
+          <div class="item__name">Static Tour Tee</div>
+          <div class="item__meta">Size M · Qty 1</div>
+        </div>
+        <div class="item__price">$38.00</div>
+      </div>
+      <div class="item">
+        <div class="item__img item__img--orange">
+          <svg viewBox="0 0 200 200"><path d="M70 24q30-22 60 0l52 30-14 70-22-8v80H54v-80l-22 8-14-70Z" fill="#f4efe6" stroke="#111" stroke-width="7" stroke-linejoin="round"/></svg>
+          <img src="../src/assets/merchpup_sketch.png" alt="">
+        </div>
+        <div class="item__info">
+          <div class="item__name">Saints Pup Tee</div>
+          <div class="item__meta">Size L · Qty 1</div>
+        </div>
+        <div class="item__price">$34.00</div>
+      </div>
+      <div class="total"><span>Total paid</span><span>$72.00</span></div>
+    </div>
+  </section>
+
+  <!-- Actions -->
+  <div class="actions">
+    <span class="btn btn--primary">Back to Home</span>
+    <span class="btn btn--outline">Browse More Shows</span>
+  </div>
+</div>
+
+<script>
+  // Decorative QR-style pattern (not a real, scannable code)
+  (function () {
+    var n = 25, svg = document.getElementById('qr'), seed = 4821, out = '';
+    function rand() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    function inFinder(x, y) {
+      return (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+    }
+    function finder(ox, oy) {
+      out += '<rect x="' + ox + '" y="' + oy + '" width="7" height="7"/>' +
+             '<rect x="' + (ox + 1) + '" y="' + (oy + 1) + '" width="5" height="5" fill="#fff"/>' +
+             '<rect x="' + (ox + 2) + '" y="' + (oy + 2) + '" width="3" height="3"/>';
+    }
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      if (inFinder(x, y)) continue;
+      var on = (y === 6 || x === 6) ? (x + y) % 2 === 0 : rand() > 0.52;
+      if (on) out += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
+    }
+    finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
+    // small alignment square
+    out += '<rect x="16" y="16" width="5" height="5"/><rect x="17" y="17" width="3" height="3" fill="#fff"/><rect x="18" y="18" width="1" height="1"/>';
+    svg.innerHTML = '<g fill="#111">' + out + '</g>';
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  iPhone 16 screen frame (393 × 852 pt) for exporting mockups as
+  screen-height "screenshots" with a status bar, Dynamic Island and
+  home indicator. Usage: iphone-frame.html?src=home-feed-mockup.html
+  Add &indicator=light for a white home indicator over dark footers.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>iPhone Frame</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #ffffff; }
+
+  .screen {
+    position: relative;
+    width: 393px;
+    height: 852px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  /* ── Status bar (54pt tall on Dynamic Island iPhones) ── */
+  .status {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 54px;
+    background: #ffffff;
+    z-index: 10;
+    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    color: #000;
+  }
+  .status__time {
+    position: absolute; left: 0; width: 133px; top: 17px;
+    text-align: center;
+    font-weight: 600; font-size: 17px; letter-spacing: -0.02em;
+  }
+  .island {
+    position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 37px; border-radius: 20px; background: #000;
+  }
+  .status__right {
+    position: absolute; right: 0; width: 133px; top: 20px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+  /* ── App content below the status bar ── */
+  .content {
+    position: absolute; top: 54px; left: 0;
+    width: 393px; height: 798px; border: 0; display: block;
+  }
+
+  /* ── Home indicator ── */
+  .home-indicator {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    width: 139px; height: 5px; border-radius: 3px; background: #000;
+    z-index: 10;
+  }
+  .home-indicator--light { background: #fff; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="status">
+    <div class="status__time">9:41</div>
+    <div class="island"></div>
+    <div class="status__right">
+      <!-- cellular -->
+      <svg width="19" height="12" viewBox="0 0 19 12"><rect x="0" y="8" width="3.2" height="4" rx="0.8"/><rect x="5.1" y="5.5" width="3.2" height="6.5" rx="0.8"/><rect x="10.2" y="3" width="3.2" height="9" rx="0.8"/><rect x="15.3" y="0" width="3.2" height="12" rx="0.8"/></svg>
+      <!-- wi-fi -->
+      <svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 2.3c2.4 0 4.6.9 6.3 2.5l1.2-1.2A10.6 10.6 0 0 0 8.5.6 10.6 10.6 0 0 0 1 3.6l1.2 1.2a9 9 0 0 1 6.3-2.5Z"/><path d="M8.5 5.7c1.5 0 2.8.6 3.9 1.5l1.2-1.2a7.2 7.2 0 0 0-10.2 0l1.2 1.2c1.1-.9 2.4-1.5 3.9-1.5Z"/><path d="M8.5 9.1c.6 0 1.1.2 1.5.6L8.5 11.3 7 9.7c.4-.4.9-.6 1.5-.6Z"/></svg>
+      <!-- battery with percentage -->
+      <svg width="28" height="13" viewBox="0 0 28 13">
+        <rect x="0.5" y="0.5" width="24" height="12" rx="3.8" fill="none" stroke="#000" stroke-opacity="0.35"/>
+        <rect x="2" y="2" width="21" height="9" rx="2.5"/>
+        <path d="M26 4.3v4.4c.9-.3 1.5-1.2 1.5-2.2s-.6-1.9-1.5-2.2Z" fill-opacity="0.4"/>
+        <text x="12.5" y="9.6" text-anchor="middle" font-family="-apple-system, 'SF Pro Text', sans-serif" font-size="8.5" font-weight="700" fill="#fff">87</text>
+      </svg>
+    </div>
+  </div>
+
+  <iframe class="content" id="content" title="Mockup"></iframe>
+  <div class="home-indicator"></div>
+</div>
+<script>
+  var src = new URLSearchParams(location.search).get('src') || 'home-feed-mockup.html';
+  document.getElementById('content').src = src;
+  if (new URLSearchParams(location.search).get('indicator') === 'light') {
+    document.querySelector('.home-indicator').classList.add('home-indicator--light');
+  }
+</script>
+</body>
+</html>
