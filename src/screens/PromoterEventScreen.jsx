@@ -12,8 +12,20 @@ export default function PromoterEventScreen() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  // e.g. "2 sold while you were editing…" after saving a stock edit
-  const [notice, setNotice] = useState(location.state?.notice ?? '');
+  // Banner after saving merch: { tone: 'success' | 'warning', text }
+  const [notice, setNotice] = useState(location.state?.notice ?? null);
+
+  // Clear it from history so a page refresh doesn't show it again
+  useEffect(() => {
+    if (location.state?.notice) navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
+
+  // Success banners fade away on their own; warnings stay until dismissed
+  useEffect(() => {
+    if (notice?.tone !== 'success') return;
+    const timer = setTimeout(() => setNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
   const [event, setEvent] = useState(null);
   const [merch, setMerch] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -248,11 +260,16 @@ export default function PromoterEventScreen() {
       <div className="promoter-event__content">
 
         {notice && (
-          <div className="promoter-event__notice" role="status">
-            <p>{notice}</p>
+          <div className={`promoter-event__notice promoter-event__notice--${notice.tone}`} role="status">
+            {notice.tone === 'success' && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="promoter-event__notice-icon" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+            <p>{notice.text}</p>
             <button
               className="promoter-event__notice-close"
-              onClick={() => setNotice('')}
+              onClick={() => setNotice(null)}
               aria-label="Dismiss"
             >
               ×

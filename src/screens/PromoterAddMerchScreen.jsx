@@ -161,7 +161,9 @@ export default function PromoterAddMerchScreen() {
           setError(saveError.message);
           return;
         }
-        navigate(`/promoter/events/${eventId}`);
+        navigate(`/promoter/events/${eventId}`, {
+          state: { notice: { tone: 'success', text: `${form.name} added to your event.` } },
+        });
         return;
       }
 
@@ -196,12 +198,15 @@ export default function PromoterAddMerchScreen() {
 
       const sold = stockResult?.sold_while_editing ?? 0;
       navigate(`/promoter/events/${eventId}`, {
-        state: sold > 0
-          ? {
-              notice: `${sold} ${form.name} sold while you were editing. Those sales were kept — `
-                + `stock is now ${stockResult.quantity_available}.`,
-            }
-          : undefined,
+        state: {
+          notice: sold > 0
+            ? {
+                tone: 'warning',
+                text: `Changes saved. ${sold} ${form.name} sold while you were editing — those `
+                  + `sales were kept, so stock is now ${stockResult.quantity_available}.`,
+              }
+            : { tone: 'success', text: `Changes to ${form.name} saved.` },
+        },
       });
     } catch {
       setError('Something went wrong. Please try again.');
