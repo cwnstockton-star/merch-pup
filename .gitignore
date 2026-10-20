@@ -25,3 +25,6 @@ dist-ssr
 
 # Supabase CLI local cache (project ref, connection info)
 supabase/.temp/
+
+# Portfolio mockups — for the personal website, not the app
+mockups/
