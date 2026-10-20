@@ -4,6 +4,7 @@ import CartButton from '../components/CartButton';
 import BottomNav from '../components/BottomNav';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
+import { LOW_STOCK_THRESHOLD, isSoldOut, stockLeft } from '../lib/stock';
 import './ProductDetailScreen.css';
 
 export default function ProductDetailScreen() {
@@ -31,8 +32,10 @@ export default function ProductDetailScreen() {
 
       if (itemData) {
         setItem(itemData);
-        // Pre-select size if there's only one
-        if (itemData.sizes?.length === 1) setSelectedSize(itemData.sizes[0]);
+        // Pre-select size if there's only one (and it's in stock)
+        if (itemData.sizes?.length === 1 && stockLeft(itemData, itemData.sizes[0]) > 0) {
+          setSelectedSize(itemData.sizes[0]);
+        }
 
         const { data: relatedData } = await supabase
           .from('merch_items')
@@ -73,6 +76,17 @@ export default function ProductDetailScreen() {
   // Treat the single image_url as a one-item array to keep carousel logic intact
   const images = item.image_url ? [item.image_url] : [];
   const sizes = item.sizes || [];
+
+  // Stock for what's currently chosen (total until a size is picked)
+  const soldOut = isSoldOut(item);
+  const sizeForStock = selectedSize || (sizes.length === 1 ? sizes[0] : null);
+  const left = stockLeft(item, sizeForStock);
+
+  function chooseSize(size) {
+    setSelectedSize(size);
+    // keep quantity within what's left in the new size
+    setQty((q) => Math.max(1, Math.min(q, stockLeft(item, size))));
+  }
 
   return (
     <div className="product-detail screen">
@@ -136,23 +150,33 @@ export default function ProductDetailScreen() {
                 {selectedSize && <span className="product-detail__size-chosen"> — {selectedSize}</span>}
               </p>
               <div className="product-detail__sizes" role="group" aria-label="Select size">
-                {sizes.map((s) => (
-                  <button
-                    key={s}
-                    className={`product-detail__size-pill ${selectedSize === s ? 'product-detail__size-pill--active' : ''}`}
-                    onClick={() => setSelectedSize(s)}
-                    aria-pressed={selectedSize === s}
-                  >
-                    {s}
-                  </button>
-                ))}
+                {sizes.map((s) => {
+                  const sizeSoldOut = stockLeft(item, s) <= 0;
+                  return (
+                    <button
+                      key={s}
+                      className={`product-detail__size-pill ${selectedSize === s ? 'product-detail__size-pill--active' : ''} ${sizeSoldOut ? 'product-detail__size-pill--soldout' : ''}`}
+                      onClick={() => chooseSize(s)}
+                      aria-pressed={selectedSize === s}
+                      aria-label={sizeSoldOut ? `${s}, sold out` : s}
+                      disabled={sizeSoldOut}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
           {/* ── Quantity stepper ── */}
           <div className="product-detail__qty-section">
-            <p className="product-detail__field-label">Quantity</p>
+            <p className="product-detail__field-label">
+              Quantity
+              {!soldOut && left <= LOW_STOCK_THRESHOLD && (
+                <span className="product-detail__low-stock"> — Only {left} left</span>
+              )}
+            </p>
             <div className="product-detail__qty-stepper">
               <button
                 className="product-detail__qty-btn"
@@ -167,8 +191,9 @@ export default function ProductDetailScreen() {
               <span className="product-detail__qty-val" aria-live="polite" aria-label={`Quantity: ${qty}`}>{qty}</span>
               <button
                 className="product-detail__qty-btn"
-                onClick={() => setQty((q) => q + 1)}
+                onClick={() => setQty((q) => Math.min(left, q + 1))}
                 aria-label="Increase quantity"
+                disabled={qty >= left}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
                   <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -179,9 +204,9 @@ export default function ProductDetailScreen() {
 
           {/* ── Add to Cart ── */}
           <button
-            className={`btn btn-primary product-detail__add-btn ${added ? 'product-detail__add-btn--added' : ''}`}
+            className={`btn btn-primary btn-tilt product-detail__add-btn ${added ? 'product-detail__add-btn--added' : ''}`}
             onClick={handleAddToCart}
-            disabled={sizes.length > 1 && !selectedSize}
+            disabled={soldOut || (sizes.length > 1 && !selectedSize)}
             aria-live="polite"
           >
             {added ? (
@@ -197,7 +222,9 @@ export default function ProductDetailScreen() {
                   <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                 </svg>
-                {sizes.length > 1 && !selectedSize
+                {soldOut
+                  ? 'Sold Out'
+                  : sizes.length > 1 && !selectedSize
                   ? 'Select a Size'
                   : `Pre-Order — $${(parseFloat(item.price) * qty).toFixed(2)}`}
               </>

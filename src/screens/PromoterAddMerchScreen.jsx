@@ -22,6 +22,13 @@ export default function PromoterAddMerchScreen() {
     category: 'Tops',
   });
   const [selectedSizes, setSelectedSizes] = useState([]);
+  // Per-size stock counts as typed, e.g. { S: '10', M: '4' }
+  const [sizeStock, setSizeStock] = useState({});
+  // Item saved before per-size stock existed — needs counts entered once
+  const [needsSizeStock, setNeedsSizeStock] = useState(false);
+  // Stock when the edit form was opened, so saving applies only the change
+  // (sales made while editing aren't erased)
+  const [loadedStock, setLoadedStock] = useState({ sizes: {}, total: 0 });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImageUrl, setExistingImageUrl] = useState(null);
@@ -54,6 +61,12 @@ export default function PromoterAddMerchScreen() {
         category: data.category || 'Tops',
       });
       setSelectedSizes(data.sizes || []);
+      const savedSizeStock = data.size_stock || {};
+      setLoadedStock({ sizes: savedSizeStock, total: data.quantity_available ?? 0 });
+      setSizeStock(Object.fromEntries(
+        Object.entries(savedSizeStock).map(([size, count]) => [size, String(count)])
+      ));
+      setNeedsSizeStock((data.sizes || []).some((size) => !(size in savedSizeStock)));
       setExistingImageUrl(data.image_url || null);
       setInitialLoading(false);
     }
@@ -62,6 +75,10 @@ export default function PromoterAddMerchScreen() {
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function handleSizeStockChange(size, value) {
+    setSizeStock((prev) => ({ ...prev, [size]: value }));
   }
 
   function toggleSize(size) {
@@ -80,6 +97,25 @@ export default function PromoterAddMerchScreen() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+
+    // With sizes, stock is entered per size and the total is their sum
+    const hasSizes = selectedSizes.length > 0;
+    const missingSize = selectedSizes.find((size) => !/^\d+$/.test(String(sizeStock[size] ?? '').trim()));
+    if (hasSizes && missingSize) {
+      setError(`Enter how many ${missingSize} you have in stock (0 is fine).`);
+      return;
+    }
+    if (!hasSizes && !/^\d+$/.test(String(form.quantity).trim())) {
+      setError('Enter how many you have in stock.');
+      return;
+    }
+    const sizeCounts = Object.fromEntries(
+      selectedSizes.map((size) => [size, parseInt(sizeStock[size], 10)])
+    );
+    const totalStock = hasSizes
+      ? Object.values(sizeCounts).reduce((sum, n) => sum + n, 0)
+      : parseInt(form.quantity, 10);
+
     setLoading(true);
 
     try {
@@ -103,28 +139,70 @@ export default function PromoterAddMerchScreen() {
         imageUrl = publicUrl;
       }
 
-      const itemPayload = {
+      const details = {
         name: form.name,
         description: form.description,
         price: parseFloat(form.price),
         sizes: selectedSizes,
-        quantity_available: parseInt(form.quantity, 10),
         image_url: imageUrl,
         category: form.category,
       };
 
-      const { error: saveError } = await withTimeout(
-        isEditing
-          ? supabase.from('merch_items').update(itemPayload).eq('id', merchId)
-          : supabase.from('merch_items').insert({ ...itemPayload, event_id: eventId })
-      );
+      if (!isEditing) {
+        const { error: saveError } = await withTimeout(
+          supabase.from('merch_items').insert({
+            ...details,
+            size_stock: sizeCounts,
+            quantity_available: totalStock,
+            event_id: eventId,
+          })
+        );
+        if (saveError) {
+          setError(saveError.message);
+          return;
+        }
+        navigate(`/promoter/events/${eventId}`);
+        return;
+      }
 
+      // Editing: save the details, then the stock as a change from when the
+      // form was opened (see update_merch_stock in migration 003)
+      const { data: updatedRows, error: saveError } = await withTimeout(
+        supabase.from('merch_items').update(details).eq('id', merchId).select('id')
+      );
       if (saveError) {
         setError(saveError.message);
         return;
       }
+      if (!updatedRows?.length) {
+        // a blocked update returns no error, just no rows
+        setError("Couldn't save changes to this item. Make sure you're signed in as its promoter.");
+        return;
+      }
 
-      navigate(`/promoter/events/${eventId}`);
+      const { data: stockResult, error: stockError } = await withTimeout(
+        supabase.rpc('update_merch_stock', {
+          p_item_id: merchId,
+          p_loaded_sizes: loadedStock.sizes,
+          p_new_sizes: sizeCounts,
+          p_loaded_total: loadedStock.total,
+          p_new_total: totalStock,
+        })
+      );
+      if (stockError) {
+        setError('Details saved, but stock could not be updated: ' + stockError.message);
+        return;
+      }
+
+      const sold = stockResult?.sold_while_editing ?? 0;
+      navigate(`/promoter/events/${eventId}`, {
+        state: sold > 0
+          ? {
+              notice: `${sold} ${form.name} sold while you were editing. Those sales were kept — `
+                + `stock is now ${stockResult.quantity_available}.`,
+            }
+          : undefined,
+      });
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -258,18 +336,50 @@ export default function PromoterAddMerchScreen() {
               </div>
             </div>
 
-            <div className="input-group">
-              <label className="input-label" htmlFor="quantity">Quantity Available</label>
-              <input className="input-field" id="quantity" name="quantity" type="number"
-                min="0" placeholder="50"
-                value={form.quantity} onChange={handleChange} required />
-            </div>
+            {selectedSizes.length > 0 ? (
+              <div className="input-group">
+                <label className="input-label">Stock per Size</label>
+                {needsSizeStock && (
+                  <p className="merch-stock__hint">
+                    Stock is now tracked per size. Enter how many of each size you have.
+                  </p>
+                )}
+                <div className="merch-stock">
+                  {ALL_SIZES.filter((size) => selectedSizes.includes(size)).map((size) => (
+                    <div key={size} className="merch-stock__row">
+                      <label className="merch-stock__size" htmlFor={`stock-${size}`}>{size}</label>
+                      <input
+                        className="input-field merch-stock__input"
+                        id={`stock-${size}`}
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        placeholder="0"
+                        value={sizeStock[size] ?? ''}
+                        onChange={(e) => handleSizeStockChange(size, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="merch-stock__total">
+                  Total in stock:{' '}
+                  {selectedSizes.reduce((sum, size) => sum + (parseInt(sizeStock[size], 10) || 0), 0)}
+                </p>
+              </div>
+            ) : (
+              <div className="input-group">
+                <label className="input-label" htmlFor="quantity">Quantity Available</label>
+                <input className="input-field" id="quantity" name="quantity" type="number"
+                  min="0" placeholder="50"
+                  value={form.quantity} onChange={handleChange} required />
+              </div>
+            )}
           </div>
 
           {error && <p className="auth-error">{error}</p>}
 
           <div className="create__actions">
-            <button type="submit" className="btn btn-primary btn-lg btn-block create__cta" disabled={loading}>
+            <button type="submit" className="btn btn-primary btn-tilt btn-lg btn-block create__cta" disabled={loading}>
               {loading
                 ? (isEditing ? 'Saving…' : 'Adding item…')
                 : (isEditing ? 'Save Changes' : 'Add to Event')}

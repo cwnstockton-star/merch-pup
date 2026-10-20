@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import { useAuth } from '../context/AuthContext';
+import { clearPendingJoinCode, resolvePendingJoin } from '../lib/joinEvent';
 import './CreateAccountScreen.css';
 
 export default function LoginScreen() {
@@ -20,13 +21,19 @@ export default function LoginScreen() {
     setError('');
     setLoading(true);
     try {
-      const { error } = await signIn(form.email, form.password);
+      const { error, user } = await signIn(form.email, form.password);
       if (error) {
         setError(error.message);
+      } else if (['promoter', 'venue'].includes(user?.user_metadata?.role)) {
+        // ('venue' = promoter accounts created before the role was renamed)
+        // join links are for fans — drop any saved one
+        clearPendingJoinCode();
+        navigate('/promoter/dashboard');
       } else {
-        // AuthContext will have fetched the profile; ProtectedRoute will redirect
-        // venue users to /venue/dashboard automatically from /home
-        navigate('/home');
+        // If the fan arrived via an event join link, take them to that event.
+        // Otherwise /home (ProtectedRoute still redirects by role if needed).
+        const next = await resolvePendingJoin(user.id, '/home');
+        navigate(next.path, { state: next.state });
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -102,7 +109,7 @@ export default function LoginScreen() {
           <div className="create__actions">
             <button
               type="submit"
-              className="btn btn-primary btn-lg btn-block create__cta"
+              className="btn btn-primary btn-tilt btn-lg btn-block create__cta"
               disabled={loading}
             >
               {loading ? 'Signing in…' : 'Sign In'}

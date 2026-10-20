@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import QRCode from 'qrcode';
 import { supabase } from '../lib/supabase';
+import { eventJoinUrl } from '../lib/joinEvent';
+import { isSoldOut } from '../lib/stock';
 import Logo from '../components/Logo';
 import './CreateAccountScreen.css';
 import './PromoterEventScreen.css';
@@ -8,12 +11,18 @@ import './PromoterEventScreen.css';
 export default function PromoterEventScreen() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  // e.g. "2 sold while you were editing…" after saving a stock edit
+  const [notice, setNotice] = useState(location.state?.notice ?? '');
   const [event, setEvent] = useState(null);
   const [merch, setMerch] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('merch'); // 'merch' | 'orders'
   const [codeCopied, setCodeCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [qrPreview, setQrPreview] = useState(null);
+  const [orderSearch, setOrderSearch] = useState('');
   const [smsState, setSmsState] = useState({}); // { [orderId]: 'sending' | 'sent' | 'error' }
   const newOrderIds = useRef(new Set());
 
@@ -58,9 +67,19 @@ export default function PromoterEventScreen() {
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'orders', filter: `event_id=eq.${eventId}` },
-        (payload) => {
+        async (payload) => {
+          // Refetch the whole order: when a 'pending' order becomes 'paid', its
+          // items have only just been written
+          const { data } = await supabase
+            .from('orders')
+            .select('*, order_items(*), fan:profiles!fan_id(name, phone)')
+            .eq('id', payload.new.id)
+            .single();
+          if (!data) return;
           setOrders((prev) =>
-            prev.map((o) => o.id === payload.new.id ? { ...o, status: payload.new.status } : o)
+            prev.some((o) => o.id === data.id)
+              ? prev.map((o) => (o.id === data.id ? data : o))
+              : [data, ...prev]
           );
         }
       )
@@ -111,13 +130,39 @@ export default function PromoterEventScreen() {
     setTimeout(() => setCodeCopied(false), 2000);
   }
 
+  function copyLink() {
+    navigator.clipboard.writeText(eventJoinUrl(event.event_code));
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
   function shareCode() {
+    const url = eventJoinUrl(event.event_code);
     const text = `Join ${event.artist || event.name}'s merch pre-order on Merch PUP!\n\nEvent code: ${event.event_code}`;
     if (navigator.share) {
-      navigator.share({ title: 'Merch PUP Event Code', text });
+      navigator.share({ title: 'Merch PUP Event', text, url });
     } else {
-      copyCode();
+      copyLink();
     }
+  }
+
+  // Downloads the event's join-link QR code for signs, posters, socials.
+  // PNG is large enough to print; SVG scales to any size (best for sign designs).
+  async function downloadQr(format) {
+    const url = eventJoinUrl(event.event_code);
+    const colors = { dark: '#111111', light: '#ffffff' };
+    let href;
+    if (format === 'svg') {
+      const svg = await QRCode.toString(url, { type: 'svg', margin: 2, color: colors });
+      href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+    } else {
+      href = await QRCode.toDataURL(url, { width: 2048, margin: 2, color: colors });
+    }
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = `merchpup-${event.event_code}-qr.${format}`;
+    link.click();
+    if (format === 'svg') setTimeout(() => URL.revokeObjectURL(href), 1000);
   }
 
   function formatDate(dateStr) {
@@ -132,11 +177,41 @@ export default function PromoterEventScreen() {
     });
   }
 
+  // Small on-screen preview of the event's join QR code
+  const eventCode = event?.event_code;
+  useEffect(() => {
+    if (!eventCode) return;
+    let cancelled = false;
+    QRCode.toDataURL(eventJoinUrl(eventCode), { width: 240, margin: 1 })
+      .then((url) => { if (!cancelled) setQrPreview(url); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [eventCode]);
+
   // Stats derived from orders
-  const totalOrders = orders.length;
-  const pending = orders.filter((o) => o.status === 'paid').length;
-  const pickedUp = orders.filter((o) => o.status === 'picked_up').length;
-  const revenue = orders.reduce((sum, o) => sum + parseFloat(o.total), 0);
+  // 'pending' = still being finalized after payment, 'refunded' = sold out
+  // mid-checkout — neither is a real order for the merch table
+  const activeOrders = orders.filter((o) => o.status === 'paid' || o.status === 'picked_up');
+  const totalOrders = activeOrders.length;
+  const pending = activeOrders.filter((o) => o.status === 'paid').length;
+  const pickedUp = activeOrders.filter((o) => o.status === 'picked_up').length;
+  // What the promoter earns: the fan's total minus Merch PUP's service fee
+  const merchTotal = (o) => parseFloat(o.total) - parseFloat(o.service_fee ?? 0);
+  const revenue = activeOrders.reduce((sum, o) => sum + merchTotal(o), 0);
+
+  // Order search — matches pickup code (ignoring dashes/spaces, so staff can
+  // type just the last few characters), fan name, or phone digits
+  const searchText = orderSearch.trim().toLowerCase();
+  const searchCode = searchText.replace(/[^a-z0-9]/g, '');
+  const searchDigits = searchText.replace(/\D/g, '');
+  const visibleOrders = !searchText ? activeOrders : activeOrders.filter((o) => {
+    const code = (o.qr_code || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const name = (o.fan?.name || '').toLowerCase();
+    const phone = (o.fan?.phone || '').replace(/\D/g, '');
+    return (searchCode && code.includes(searchCode))
+      || name.includes(searchText)
+      || (searchDigits.length >= 3 && phone.includes(searchDigits));
+  });
 
   if (loading) {
     return (
@@ -172,6 +247,19 @@ export default function PromoterEventScreen() {
 
       <div className="promoter-event__content">
 
+        {notice && (
+          <div className="promoter-event__notice" role="status">
+            <p>{notice}</p>
+            <button
+              className="promoter-event__notice-close"
+              onClick={() => setNotice('')}
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* ── Title ── */}
         <div>
           <span className="badge">Event</span>
@@ -196,6 +284,37 @@ export default function PromoterEventScreen() {
             </button>
             <button className="btn btn-outline promoter-event__copy-btn" onClick={shareCode}>
               Share
+            </button>
+          </div>
+
+          {/* Join link + QR — scanning it connects fans to this event, no typing */}
+          <div className="promoter-event__join">
+            {qrPreview && (
+              <img
+                src={qrPreview}
+                alt={`QR code that opens the join link for event ${event.event_code}`}
+                className="promoter-event__join-qr"
+                width="96"
+                height="96"
+              />
+            )}
+            <div className="promoter-event__join-info">
+              <p className="promoter-event__code-label">Join Link &amp; QR</p>
+              <p className="promoter-event__join-url">{eventJoinUrl(event.event_code)}</p>
+              <p className="promoter-event__code-hint">
+                Put the QR on signs and posters. Fans scan it and land right on your event.
+              </p>
+            </div>
+          </div>
+          <div className="promoter-event__code-actions promoter-event__code-actions--wrap">
+            <button className="btn btn-outline promoter-event__copy-btn" onClick={copyLink}>
+              {linkCopied ? 'Copied!' : 'Copy Link'}
+            </button>
+            <button className="btn btn-outline promoter-event__copy-btn" onClick={() => downloadQr('png')}>
+              QR (PNG)
+            </button>
+            <button className="btn btn-outline promoter-event__copy-btn" onClick={() => downloadQr('svg')}>
+              QR (SVG)
             </button>
           </div>
         </div>
@@ -263,10 +382,15 @@ export default function PromoterEventScreen() {
                         <h3 className="promoter-merch-card__name">{item.name}</h3>
                         <p className="promoter-merch-card__price">${parseFloat(item.price).toFixed(2)}</p>
                         {item.sizes?.length > 0 && (
-                          <p className="promoter-merch-card__meta">{item.sizes.join(' · ')}</p>
+                          <p className="promoter-merch-card__meta">
+                            {/* per-size counts when tracked, e.g. "S 4 · M 0 · L 2" */}
+                            {item.sizes
+                              .map((size) => (size in (item.size_stock || {}) ? `${size} ${item.size_stock[size]}` : size))
+                              .join(' · ')}
+                          </p>
                         )}
-                        <p className="promoter-merch-card__meta promoter-merch-card__qty">
-                          Qty: {item.quantity_available}
+                        <p className={`promoter-merch-card__meta promoter-merch-card__qty ${isSoldOut(item) ? 'promoter-merch-card__qty--soldout' : ''}`}>
+                          {isSoldOut(item) ? 'Sold out' : `In stock: ${item.quantity_available}`}
                         </p>
                       </div>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="promoter-merch-card__arrow" aria-hidden="true">
@@ -309,14 +433,38 @@ export default function PromoterEventScreen() {
               </div>
             </div>
 
-            {orders.length === 0 ? (
+            {activeOrders.length === 0 ? (
               <div className="promoter-event__empty">
                 <p>No orders yet.</p>
                 <p>New orders will appear here in real time.</p>
               </div>
             ) : (
+              <>
+              <div className="promoter-orders__search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+                </svg>
+                <input
+                  type="search"
+                  className="promoter-orders__search-input"
+                  placeholder="Search code, name, or phone"
+                  value={orderSearch}
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                  aria-label="Search orders"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+              </div>
+              {searchText && (
+                <p className="promoter-orders__search-count">
+                  {visibleOrders.length === 0
+                    ? 'No orders match.'
+                    : `Showing ${visibleOrders.length} of ${activeOrders.length} orders`}
+                </p>
+              )}
               <ul className="promoter-orders__list">
-                {orders.map((order) => {
+                {visibleOrders.map((order) => {
                   const isNew = newOrderIds.current.has(order.id);
                   const isPaid = order.status === 'paid';
                   return (
@@ -359,7 +507,7 @@ export default function PromoterEventScreen() {
                       </ul>
 
                       <div className="promoter-order-card__footer">
-                        <span className="promoter-order-card__total">${parseFloat(order.total).toFixed(2)}</span>
+                        <span className="promoter-order-card__total">${merchTotal(order).toFixed(2)}</span>
                         {isPaid && (
                           <div className="promoter-order-card__actions">
                             {order.fan?.phone && (
@@ -387,6 +535,7 @@ export default function PromoterEventScreen() {
                   );
                 })}
               </ul>
+              </>
             )}
           </>
         )}

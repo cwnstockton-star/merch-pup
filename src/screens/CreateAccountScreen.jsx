@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import { useAuth } from '../context/AuthContext';
+import { resolvePendingJoin } from '../lib/joinEvent';
 import './CreateAccountScreen.css';
 
 export default function CreateAccountScreen() {
@@ -21,7 +22,7 @@ export default function CreateAccountScreen() {
     setError('');
     setLoading(true);
     try {
-      const { error, needsConfirmation } = await signUp(form.email, form.password, {
+      const { error, user, needsConfirmation } = await signUp(form.email, form.password, {
         name: form.name,
         phone: form.phone,
         role: 'fan',
@@ -29,9 +30,12 @@ export default function CreateAccountScreen() {
       if (error) {
         setError(error.message);
       } else if (needsConfirmation) {
+        // any saved join code stays saved until they confirm and sign in
         setConfirmed(true); // show "check your email" message
       } else {
-        navigate('/connect-event');
+        // Came from an event join link → straight to that event
+        const next = await resolvePendingJoin(user.id, '/connect-event');
+        navigate(next.path, { state: next.state });
       }
     } catch {
       setError('Something went wrong. Please try again.');
@@ -61,7 +65,7 @@ export default function CreateAccountScreen() {
           </p>
           <div className="create__actions" style={{ marginTop: 32 }}>
             <button
-              className="btn btn-primary btn-lg btn-block create__cta"
+              className="btn btn-primary btn-tilt btn-lg btn-block create__cta"
               onClick={() => navigate('/login')}
             >
               Go to Sign In
@@ -178,7 +182,7 @@ export default function CreateAccountScreen() {
           <div className="create__actions">
             <button
               type="submit"
-              className="btn btn-primary btn-lg btn-block create__cta"
+              className="btn btn-primary btn-tilt btn-lg btn-block create__cta"
               disabled={loading}
             >
               {loading ? 'Creating account…' : 'Create Account'}

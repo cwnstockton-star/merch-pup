@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Logo from '../components/Logo';
+import OrderQrCode from '../components/OrderQrCode';
+import { invokeFunction } from '../lib/invokeFunction';
 import merchpupgoth1 from '../assets/merchpupgoth1.png';
 import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
@@ -29,12 +31,8 @@ export default function OrderConfirmationScreen() {
     async function verifyAndLoad() {
       try {
         console.warn('[OrderConfirmation] invoking verify-checkout-session', { sessionId });
-        const { data, error: fnError } = await supabase.functions.invoke('verify-checkout-session', {
-          body: { sessionId },
-        });
-        console.warn('[OrderConfirmation] verify-checkout-session result', { data, fnError });
-
-        if (fnError || data?.error) throw new Error(fnError?.message || data.error);
+        const data = await invokeFunction('verify-checkout-session', { sessionId });
+        console.warn('[OrderConfirmation] verify-checkout-session result', { data });
 
         setOrder(data.order);
         clearCart();
@@ -75,8 +73,6 @@ export default function OrderConfirmationScreen() {
       </div>
     );
   }
-
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(order.qr_code)}`;
 
   return (
     <div className="order-confirm screen">
@@ -125,13 +121,7 @@ export default function OrderConfirmationScreen() {
         <div className="order-confirm__qr-block">
           <p className="order-confirm__qr-label">Show this at the merch table</p>
           <div className="order-confirm__qr-frame">
-            <img
-              src={qrUrl}
-              alt={`QR code for order ${order.qr_code}`}
-              className="order-confirm__qr-img"
-              width="200"
-              height="200"
-            />
+            <OrderQrCode value={order.qr_code} size={200} className="order-confirm__qr-img" />
           </div>
           <p className="order-confirm__qr-order-id">{order.qr_code}</p>
         </div>
@@ -209,6 +199,13 @@ export default function OrderConfirmationScreen() {
             ))}
           </ul>
 
+          {parseFloat(order.service_fee) > 0 && (
+            <div className="order-confirm__fee-row">
+              <span>Service fee</span>
+              <span>${parseFloat(order.service_fee).toFixed(2)}</span>
+            </div>
+          )}
+
           <div className="order-confirm__total-row">
             <span>Total paid</span>
             <span>${parseFloat(order.total).toFixed(2)}</span>
@@ -218,7 +215,7 @@ export default function OrderConfirmationScreen() {
         {/* ── Footer actions ── */}
         <div className="order-confirm__actions">
           <button
-            className="btn btn-primary order-confirm__home-btn"
+            className="btn btn-primary btn-tilt order-confirm__home-btn"
             onClick={() => navigate('/home')}
           >
             Back to Home

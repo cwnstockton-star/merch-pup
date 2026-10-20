@@ -1,18 +1,21 @@
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
-import { supabase } from '../lib/supabase';
-import { withTimeout } from '../lib/withTimeout';
+import { joinEventByCode } from '../lib/joinEvent';
 import { useAuth } from '../context/AuthContext';
 import './ConnectEventScreen.css';
 
 export default function ConnectEventScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session } = useAuth();
-  const [code, setCode] = useState('');
+  // Pre-filled when arriving from a join link that couldn't be used
+  const [code, setCode] = useState(location.state?.joinCode ?? '');
   const [scanning, setScanning] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(
+    location.state?.joinFailed ? "We couldn't connect you with that link. Check the code and try again." : ''
+  );
   const fileInputRef = useRef(null);
 
   async function handleCodeSubmit(e) {
@@ -22,25 +25,14 @@ export default function ConnectEventScreen() {
     setLoading(true);
 
     try {
-      // Look up event by code
-      const { data: event, error: fetchError } = await withTimeout(
-        supabase.from('events').select('id').eq('event_code', trimmed).single()
-      );
+      const eventId = await joinEventByCode(session.user.id, trimmed);
 
-      if (fetchError || !event) {
+      if (!eventId) {
         setError('Event code not found. Double-check the code and try again.');
         return;
       }
 
-      // Record the connection (upsert so re-connecting is idempotent)
-      await withTimeout(
-        supabase.from('event_connections').upsert(
-          { fan_id: session.user.id, event_id: event.id },
-          { onConflict: 'fan_id,event_id' }
-        )
-      );
-
-      navigate(`/events/${event.id}`, { state: { autoFollowed: true } });
+      navigate(`/events/${eventId}`, { state: { autoFollowed: true } });
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {

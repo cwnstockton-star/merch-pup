@@ -349,6 +349,16 @@
   color: var(--color-primary);
 }
 
+.order-confirm__fee-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 2px solid var(--color-gray-200);
+  font-size: 14px;
+  color: var(--color-gray-600);
+}
+
 /* ── Footer actions ── */
 .order-confirm__actions {
   display: flex;
@@ -361,26 +371,12 @@
   width: 100%;
   padding: 15px;
   font-size: 15px;
-  border-radius: var(--radius-md);
-  box-shadow: 4px 4px 0 var(--color-accent);
-  transition: background 0.15s ease, color 0.15s ease,
-              box-shadow 0.12s ease, transform 0.1s ease;
-}
-
-.order-confirm__home-btn:hover {
-  background: var(--color-accent);
-  color: var(--color-primary);
-  box-shadow: 4px 4px 0 var(--color-primary);
-}
-
-.order-confirm__home-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--color-accent);
+  border-radius: var(--radius-btn);
 }
 
 .order-confirm__events-btn {
   width: 100%;
   padding: 14px;
   font-size: 15px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
 }

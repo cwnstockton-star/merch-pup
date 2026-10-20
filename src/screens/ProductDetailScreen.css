@@ -263,6 +263,22 @@
   box-shadow: 2px 2px 0 var(--color-accent);
 }
 
+/* Sold-out size: struck through and not tappable */
+.product-detail__size-pill--soldout,
+.product-detail__size-pill--soldout:hover {
+  border-color: var(--color-gray-200);
+  background: var(--color-gray-100);
+  color: var(--color-gray-400);
+  text-decoration: line-through;
+  cursor: default;
+}
+
+.product-detail__low-stock {
+  color: var(--color-accent);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
 /* ── Quantity stepper ── */
 .product-detail__qty-section {
   margin-bottom: 28px;
@@ -322,44 +338,26 @@
   gap: 10px;
   font-size: 16px;
   padding: 16px;
-  border-radius: var(--radius-md);
-  box-shadow: 4px 4px 0 var(--color-accent);
   margin-bottom: 36px;
-  transition: background 0.15s ease, color 0.15s ease,
-              box-shadow 0.12s ease, transform 0.1s ease;
-}
-
-.product-detail__add-btn:hover:not(:disabled) {
-  background: var(--color-accent);
-  color: var(--color-primary);
-  box-shadow: 4px 4px 0 var(--color-primary);
-}
-
-.product-detail__add-btn:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--color-accent);
 }
 
 .product-detail__add-btn:disabled {
-  background: var(--color-gray-200);
+  --tilt-face: var(--color-gray-200);
   color: var(--color-gray-400);
-  box-shadow: none;
   cursor: default;
-  border-color: var(--color-gray-200);
 }
 
 /* Added state */
 .product-detail__add-btn--added {
-  background: #1a7a4a;
-  border-color: #1a7a4a;
+  --tilt-face: #1a7a4a;
   color: #ffffff;
-  box-shadow: 4px 4px 0 var(--color-accent);
 }
 
-.product-detail__add-btn--added:hover {
-  background: #1a7a4a !important;
-  color: #ffffff !important;
-  border-color: #1a7a4a !important;
+/* stay green on hover — don't flip like a normal tilt button */
+.product-detail__add-btn--added:hover:not(:disabled) {
+  --tilt-face: #1a7a4a;
+  --tilt-slab: var(--color-accent);
+  color: #ffffff;
 }
 
 /* ── Related items ── */

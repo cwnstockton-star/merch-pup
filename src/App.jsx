@@ -6,6 +6,7 @@ import OnboardingScreen from './screens/OnboardingScreen';
 import CreateAccountScreen from './screens/CreateAccountScreen';
 import LoginScreen from './screens/LoginScreen';
 import ConnectEventScreen from './screens/ConnectEventScreen';
+import JoinEventScreen from './screens/JoinEventScreen';
 import HomeFeedScreen from './screens/HomeFeedScreen';
 import EventsListScreen from './screens/EventsListScreen';
 import EventDetailScreen from './screens/EventDetailScreen';
@@ -87,6 +88,8 @@ function AppRoutes() {
       <Route path="/onboarding" element={<OnboardingScreen />} />
       <Route path="/create-account" element={<CreateAccountScreen />} />
       <Route path="/login" element={<LoginScreen />} />
+      {/* Event join links from QR signs / shared links — works signed in or out */}
+      <Route path="/join/:code" element={<JoinEventScreen />} />
 
       {/* Fan-only */}
       <Route path="/connect-event" element={<ProtectedRoute requiredRole="fan"><ConnectEventScreen /></ProtectedRoute>} />

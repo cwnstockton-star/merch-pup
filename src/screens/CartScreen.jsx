@@ -4,6 +4,8 @@ import BottomNav from '../components/BottomNav';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+import { invokeFunction } from '../lib/invokeFunction';
+import { serviceFeeFor } from '../lib/fees';
 import { withTimeout } from '../lib/withTimeout';
 import './CartScreen.css';
 
@@ -31,7 +33,7 @@ export default function CartScreen() {
       });
   }, [items]);
 
-  const serviceFee = itemCount > 0 ? 1.50 : 0;
+  const serviceFee = itemCount > 0 ? serviceFeeFor(subtotal) : 0;
   const total = subtotal + serviceFee;
 
   // Group items by event
@@ -56,11 +58,7 @@ export default function CartScreen() {
         cancelUrl: `${origin}/cart`,
       };
 
-      const { data, error: fnError } = await withTimeout(
-        supabase.functions.invoke('create-checkout-session', { body: payload })
-      );
-
-      if (fnError || data?.error) throw new Error(fnError?.message || data.error);
+      const data = await withTimeout(invokeFunction('create-checkout-session', payload));
       window.location.href = data.url;
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -220,7 +218,7 @@ export default function CartScreen() {
           <div className="cart__footer">
             {error && <p className="auth-error" style={{ marginBottom: 8 }}>{error}</p>}
             <button
-              className="btn btn-primary cart__checkout-btn"
+              className="btn btn-primary btn-tilt cart__checkout-btn"
               onClick={handleCheckout}
               disabled={checkingOut}
             >

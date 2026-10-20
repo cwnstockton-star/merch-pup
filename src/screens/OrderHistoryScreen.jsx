@@ -2,16 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import CartButton from '../components/CartButton';
+import OrderQrCode from '../components/OrderQrCode';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { formatEventDate } from '../lib/utils';
 import './OrderHistoryScreen.css';
 
+const STATUS_BADGES = {
+  paid: { label: 'Ready', modifier: 'paid' },
+  picked_up: { label: 'Picked Up', modifier: 'done' },
+  refunded: { label: 'Refunded', modifier: 'refunded' },
+};
+
 function StatusBadge({ status }) {
-  const isPickedUp = status === 'picked_up';
+  const badge = STATUS_BADGES[status] ?? STATUS_BADGES.paid;
   return (
-    <span className={`order-hist__status ${isPickedUp ? 'order-hist__status--done' : 'order-hist__status--paid'}`}>
-      {isPickedUp ? 'Picked Up' : 'Ready'}
+    <span className={`order-hist__status order-hist__status--${badge.modifier}`}>
+      {badge.label}
     </span>
   );
 }
@@ -19,7 +26,7 @@ function StatusBadge({ status }) {
 function OrderCard({ order }) {
   const [qrOpen, setQrOpen] = useState(false);
   const event = order.events;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(order.qr_code)}`;
+  const isRefunded = order.status === 'refunded';
 
   return (
     <li className="order-hist__card">
@@ -34,6 +41,13 @@ function OrderCard({ order }) {
         </div>
         <StatusBadge status={order.status} />
       </div>
+
+      {isRefunded && (
+        <p className="order-hist__refund-note">
+          Something sold out while you were paying, so this order wasn't completed.
+          You were fully refunded.
+        </p>
+      )}
 
       {/* ── Items ── */}
       <ul className="order-hist__items">
@@ -56,6 +70,7 @@ function OrderCard({ order }) {
       {/* ── Footer: total + QR toggle ── */}
       <div className="order-hist__card-footer">
         <span className="order-hist__total">${parseFloat(order.total).toFixed(2)} total</span>
+        {!isRefunded && (
         <button
           className="order-hist__qr-toggle"
           onClick={() => setQrOpen((o) => !o)}
@@ -76,6 +91,7 @@ function OrderCard({ order }) {
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
+        )}
       </div>
 
       {/* ── QR panel ── */}
@@ -83,13 +99,7 @@ function OrderCard({ order }) {
         <div className="order-hist__qr-panel">
           <p className="order-hist__qr-hint">Show this at the merch table</p>
           <div className="order-hist__qr-frame">
-            <img
-              src={qrUrl}
-              alt={`QR code for order ${order.qr_code}`}
-              width="180"
-              height="180"
-              className="order-hist__qr-img"
-            />
+            <OrderQrCode value={order.qr_code} size={180} className="order-hist__qr-img" />
           </div>
           <p className="order-hist__qr-code">{order.qr_code}</p>
         </div>
@@ -110,6 +120,7 @@ export default function OrderHistoryScreen() {
         .from('orders')
         .select('*, order_items(*), events(artist, venue_name, date)')
         .eq('fan_id', session.user.id)
+        .neq('status', 'pending') // still being finalized after payment
         .order('created_at', { ascending: false });
 
       setOrders(data || []);

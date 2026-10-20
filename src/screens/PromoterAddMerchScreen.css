@@ -70,3 +70,41 @@
   border-color: var(--color-primary);
   color: var(--color-primary);
 }
+
+/* ── Stock per size ── */
+.merch-stock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.merch-stock__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.merch-stock__size {
+  width: 72px;
+  flex-shrink: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.merch-stock__input {
+  flex: 1;
+}
+
+.merch-stock__hint {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-accent-dark);
+}
+
+.merch-stock__total {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-gray-600);
+}

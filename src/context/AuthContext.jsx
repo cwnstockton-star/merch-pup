@@ -95,14 +95,14 @@ export function AuthProvider({ children }) {
       })
     );
     // data.session is null when email confirmation is required
-    return { error, needsConfirmation: !error && !data.session };
+    return { error, user: data?.user ?? null, needsConfirmation: !error && !data.session };
   }
 
   async function signIn(email, password) {
-    const { error } = await withTimeout(
+    const { data, error } = await withTimeout(
       supabase.auth.signInWithPassword({ email, password })
     );
-    return { error };
+    return { error, user: data?.user ?? null };
   }
 
   async function signOut() {

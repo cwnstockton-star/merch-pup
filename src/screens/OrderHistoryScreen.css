@@ -157,6 +157,18 @@
   background: var(--color-gray-50);
 }
 
+.order-hist__status--refunded {
+  color: var(--color-accent-dark);
+  border-color: var(--color-accent);
+  background: #fff4ee;
+}
+
+.order-hist__refund-note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-gray-600);
+}
+
 /* ── Items ── */
 .order-hist__items {
   list-style: none;

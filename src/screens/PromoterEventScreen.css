@@ -78,6 +78,44 @@
   margin-top: 6px;
 }
 
+/* ── Join link + QR (inside the dark code card) ── */
+.promoter-event__join {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.promoter-event__join-qr {
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  padding: 4px;
+  background: #fff;
+  border-radius: var(--radius-btn);
+}
+
+.promoter-event__join-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.promoter-event__join-url {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.promoter-event__code-actions--wrap {
+  flex-wrap: wrap;
+}
+
 .promoter-event__copy-btn {
   font-size: 13px;
   padding: 10px 20px;
@@ -192,6 +230,11 @@
   color: var(--color-gray-400);
 }
 
+.promoter-merch-card__qty--soldout {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 /* ════════════════════════════════
    Tab switcher
 ════════════════════════════════ */
@@ -290,6 +333,40 @@
 /* ════════════════════════════════
    Orders — list
 ════════════════════════════════ */
+/* ── Order search ── */
+.promoter-orders__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-btn);
+  background: var(--color-bg);
+  color: var(--color-gray-400);
+  transition: border-color 0.15s;
+}
+
+.promoter-orders__search:focus-within {
+  border-color: var(--color-primary);
+}
+
+.promoter-orders__search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 16px; /* 16px+ stops iPhone from zooming in on focus */
+  color: var(--color-primary);
+}
+
+.promoter-orders__search-count {
+  font-size: 13px;
+  color: var(--color-gray-600);
+}
+
 .promoter-orders__list {
   list-style: none;
   display: flex;
@@ -455,7 +532,7 @@
   border: 2px solid var(--color-gray-200);
   color: var(--color-gray-800);
   background: transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-btn);
   font-family: var(--font-heading);
   font-weight: 700;
   cursor: pointer;
@@ -481,4 +558,31 @@
   border-color: #e53e3e;
   color: #9b1c1c;
   background: rgba(229, 62, 62, 0.08);
+}
+
+/* ── Notice banner (e.g. sales made while editing stock) ── */
+.promoter-event__notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #fff4ee;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-btn);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--color-primary);
+}
+
+.promoter-event__notice p {
+  flex: 1;
+}
+
+.promoter-event__notice-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--color-gray-600);
+  cursor: pointer;
 }
