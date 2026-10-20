@@ -225,7 +225,7 @@
 /* ── Merch card ── */
 .merch-card {
   border: 2px solid var(--color-gray-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-box);
   overflow: hidden;
   background: var(--color-bg);
   cursor: pointer;

@@ -40,7 +40,7 @@
   align-items: center;
   gap: 10px;
   border: 2px solid var(--color-gray-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-box);
   background: var(--color-gray-100);
   padding: 0 12px;
   transition: border-color 0.15s ease;
@@ -117,7 +117,7 @@
 /* ── Event card ── */
 .event-card {
   border: 2px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-box);
   overflow: hidden;
   background: var(--color-bg);
   transition: box-shadow 0.15s ease, transform 0.12s ease;

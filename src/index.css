@@ -29,6 +29,9 @@
   --radius-xl: 28px;
   --radius-full: 9999px;
   --radius-btn: 4px;
+  /* cards, boxes, panels, inputs — squared to match buttons.
+     Small controls (chips, badges, dots, round icon buttons) stay round. */
+  --radius-box: 4px;
 
   --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
   --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
@@ -215,7 +218,7 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   padding: 14px 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-box);
   border: 2px solid var(--color-gray-200);
   background: var(--color-bg);
   color: var(--color-primary);
@@ -259,7 +262,7 @@ body {
 /* ── Card base ── */
 .card {
   background: var(--color-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-box);
   border: 2px solid var(--color-gray-200);
   overflow: hidden;
 }
@@ -292,6 +295,6 @@ body {
   color: #c0392b;
   background: #fdf0ef;
   border: 1px solid #f5c6c2;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-box);
   padding: 10px 14px;
 }

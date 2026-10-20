@@ -97,7 +97,7 @@
 .order-hist__card {
   background: var(--color-bg);
   border: 2px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-box);
   overflow: hidden;
   box-shadow: 4px 4px 0 var(--color-accent);
 }
@@ -285,7 +285,7 @@
 .order-hist__qr-frame {
   background: var(--color-bg);
   border: 2px solid var(--color-primary);
-  border-radius: var(--radius-md);
+  border-radius: 2px;
   padding: 12px;
   box-shadow: 3px 3px 0 var(--color-accent);
 }

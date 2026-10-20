@@ -109,7 +109,7 @@
   padding: 14px 16px;
   background: #fff8ed;
   border: 2px solid var(--color-accent);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-box);
 }
 
 .promoter-dash__stripe-banner-text {
@@ -155,7 +155,7 @@
   gap: 12px;
   padding: 16px;
   border: 2px solid var(--color-gray-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-box);
   transition: border-color 0.15s;
   cursor: pointer;
 }
@@ -220,7 +220,7 @@
   border: none;
   cursor: pointer;
   color: var(--color-gray-400);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-box);
   transition: color 0.15s, background 0.15s;
 }
 

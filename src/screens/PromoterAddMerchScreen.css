@@ -9,7 +9,7 @@
   aspect-ratio: 1 / 1;
   max-height: 240px;
   border: 2px dashed var(--color-gray-200);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-box);
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.15s;

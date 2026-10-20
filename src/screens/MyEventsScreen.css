@@ -101,7 +101,7 @@
 /* ── Event card ── */
 .my-events__card {
   border: 2px solid var(--color-primary);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-box);
   overflow: hidden;
   background: var(--color-bg);
   box-shadow: 4px 4px 0 var(--color-accent);
